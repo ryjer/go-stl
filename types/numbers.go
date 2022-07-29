@@ -5,7 +5,7 @@ type Num interface {
 	RationalNumber
 }
 
-// 有理数泛型_全程
+// 有理数泛型/可商数泛型 英文全称
 type RationalNumber interface {
 	Integer | Float
 }
