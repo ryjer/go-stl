@@ -75,7 +75,7 @@ func (this *Vector[T]) copyFrom(another *Vector[T], lo, hi int) {
 	copy(this.data, another.data[lo:hi]) // 复制数据
 }
 
-// expand 空间拓展 n 个单位
+// expand 空间拓展 n 个单位，未测试
 func (this *Vector[T]) expand(n int) {
 	newSize := this.size + n
 	if newSize <= this.capacity { // 容量足够，无需扩容
@@ -94,6 +94,17 @@ func (this *Vector[T]) Size() (usedSize int) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 	return this.size
+}
+
+// 检查是否为空
+func (this *Vector[T]) IsEmpty() bool {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+	if this.size == 0 {
+		return true
+	} else {
+		return false
+	}
 }
 
 // Get 接口，读取元素
@@ -122,6 +133,8 @@ func (this *Vector[T]) Put(r int, newElement T) (err error) {
 		return fmt.Errorf("索引/秩越界 %v", r)
 	}
 }
+
+// Insert 接口，插入
 
 // 序列化方法
 func (this *Vector[T]) String() string {

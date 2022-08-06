@@ -159,6 +159,28 @@ func Test_Size(t *testing.T) {
 	}
 }
 
+// 空向量判断
+func Test_IsEmpty(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		Receiver *Vector[T] // 接收对象
+		want     bool       // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), true},
+		{"int 短非空", NewFromSlice([]int{1, 2, 3}), false},
+		{"int 长非空", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8, 9}), false},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.IsEmpty(); got != tt.want {
+				t.Errorf("this.IsEmpty() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 // 寻秩访问
 func Test_Get(t *testing.T) {
 	type testCase[T num.Q] struct {
