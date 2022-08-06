@@ -19,7 +19,7 @@ type Vector[T num.Q] struct {
 	data     []T        // 使用内置切片作为动态数组，但总是满的(len==cap)
 }
 
-// New 构造
+// New 空构造
 func New[T num.Q]() *Vector[T] {
 	newVector := Vector[T]{
 		size:     0,
@@ -31,16 +31,9 @@ func New[T num.Q]() *Vector[T] {
 
 // NewFromSlice 从已有切片构造
 func NewFromSlice[T num.Q](elements []T) *Vector[T] {
-	var newSlice []T
-	newCapacity := defaultCapacity
-	if newCapacity < len(elements) { // 当传入元素数小于最低容量时，使用最低容量
-		for newCapacity < len(elements) {
-			newCapacity *= 2
-		}
-	}
-	// 创建新切片作为数据空间
-	newSlice = make([]T, newCapacity)
-	copy(newSlice, elements)
+	newCapacity := enoughCapacity(len(elements)) // 计算容量
+	newSlice := make([]T, newCapacity)           // 创建新切片作为数据空间
+	copy(newSlice, elements)                     // 复制切片数据
 	// 构造新列表/向量
 	newVector := Vector[T]{
 		mutex:    sync.Mutex{},
@@ -53,34 +46,81 @@ func NewFromSlice[T num.Q](elements []T) *Vector[T] {
 
 // NewFromVector 从已有列表/向量子区间构造
 func NewFromVector[T num.Q](anotherVector *Vector[T], lo, hi int) *Vector[T] {
+	// 错误检查，选定长度非法或为0时返回0长度新向量
+	if newCapacity := hi - lo; newCapacity <= 0 {
+		return New[T]()
+	}
+	// 创建足够容量的新0长度向量
 	newVector := Vector[T]{
 		size:     0,
 		capacity: defaultCapacity,
 		data:     make([]T, defaultCapacity),
 	}
+	// 复制
 	newVector.copyFrom(anotherVector, lo, hi)
 	return &newVector
 }
 
-// copyFrom 列表/向量间复制方法
+// copyFrom 向量区间复制方法：[lo,hi)区间
 func (this *Vector[T]) copyFrom(another *Vector[T], lo, hi int) {
-	// 调整空间，预留2倍空间
-	newCapacity := 2 * (hi - lo)
-	newData := make([]T, newCapacity)
-	// 复制数据到新空间
-	copy(newData, another.data[lo:hi])
-	// 更换新空间
-	this.data = newData
+	newSize := hi - lo
+	this.size = newSize // 更新已用容量
+	newCapacity := enoughCapacity(newSize)
+	// 惰性空间分配，只有空间不足时才会切换 动态空间
+	if this.capacity < newCapacity {
+		this.capacity = newCapacity       // 更新总容量
+		newData := make([]T, newCapacity) // 分配2倍新空间
+		this.data = newData               // 更换新空间，丢弃原数据空间
+	}
+	copy(this.data, another.data[lo:hi]) // 复制数据
 }
 
-// expand 空间拓展方法
-func (this *Vector[T]) expand() {
-
+// expand 空间拓展 n 个单位
+func (this *Vector[T]) expand(n int) {
+	newSize := this.size + n
+	if newSize <= this.capacity { // 容量足够，无需扩容
+		return
+	}
+	// 容量不足，进行扩容
+	newCapacity := enoughCapacity(this.capacity)
+	this.capacity = newCapacity
+	newData := make([]T, newCapacity)
+	copy(newData, this.data[0:this.size])
+	this.data = newData
 }
 
 // Size 接口，返回已用空间
 func (this *Vector[T]) Size() (usedSize int) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
 	return this.size
+}
+
+// Get 接口，读取元素
+// 警告：当给出的秩r不在有效范围内时，会返回错误 err
+func (this *Vector[T]) Get(r int) (element T, err error) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+	// 范围合法性检查
+	if 0 <= r && r < this.size {
+		return this.data[r], nil
+	} else {
+		return 0, fmt.Errorf("索引/秩越界 %v", r)
+	}
+}
+
+// Put 接口，更改元素
+// 警告：当所给秩r不再有效范围内时，返回错误err
+func (this *Vector[T]) Put(r int, newElement T) (err error) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+	// 范围合法性检查
+	if 0 <= r && r < this.size {
+		this.data[r] = newElement
+		return nil
+	} else {
+		return fmt.Errorf("索引/秩越界 %v", r)
+	}
 }
 
 // 序列化方法
@@ -90,12 +130,12 @@ func (this *Vector[T]) String() string {
 	return fmt.Sprintf("{%v %v %v}", this.size, this.capacity, this.data[:this.size])
 }
 
-// 协助空间计算函数，计算能够覆盖对应
-func enoughSize(n int) int {
-	var newSize int = defaultCapacity
-	// 扩容到一个最小的2^n，未来将借助计算机的二进制位运算机制优化
-	for newSize < n {
-		newSize *= 2
+// 协助空间计算函数，计算给定已用容量下的新容量
+// 策略：总是给出2倍空间，当倍增后依然小于最低容量时给出更大的最低容量
+func enoughCapacity(newSize int) int {
+	newCapacity := newSize * 2
+	if newSize < defaultCapacity {
+		newCapacity = defaultCapacity
 	}
-	return newSize
+	return newCapacity
 }
