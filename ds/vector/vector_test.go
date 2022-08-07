@@ -248,7 +248,7 @@ func Test_Insert(t *testing.T) {
 	// int 类型测试
 	intTests := []testCase[int]{
 		{"int 空向量测试", NewFromSlice([]int{}), args[int]{0, 0}, "{1 8 [0]}"},
-		{"int 下边界", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), args[int]{0, 0}, "{9 16 [0 1 2 3 4 5 6 7 8]}"},
+		{"int 下边界", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7}), args[int]{0, 0}, "{8 8 [0 1 2 3 4 5 6 7]}"},
 		{"int 中间随机", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), args[int]{5, 0}, "{9 16 [1 2 3 4 5 0 6 7 8]}"},
 		{"int 上边界", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), args[int]{7, 0}, "{9 16 [1 2 3 4 5 6 7 0 8]}"},
 	}
@@ -261,7 +261,7 @@ func Test_Insert(t *testing.T) {
 	}
 }
 
-// 插入单个元素
+// 区间移除
 func Test_Remove(t *testing.T) {
 	type args struct {
 		lo, hi int
@@ -282,7 +282,31 @@ func Test_Remove(t *testing.T) {
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.Receiver.Remove(tt.args.lo, tt.args.hi); tt.Receiver.String() != tt.want {
-				t.Errorf("this.Remove((%v, %v]) => %v, want %v", tt.args.lo, tt.args.hi, tt.Receiver.String(), tt.want)
+				t.Errorf("this.Remove(%v, %v) => %v, want %v", tt.args.lo, tt.args.hi, tt.Receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
+// 单元素移除
+func Test_Remove1(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		Receiver *Vector[T] // 接收对象
+		arg      int        // 单参数，秩
+		want     string     // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), 0, "{0 8 []}"},
+		{"int 下边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7, 8}), 0, "{8 18 [1 2 3 4 5 6 7 8]}"},
+		{"int 中间随机", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7, 8}), 3, "{8 18 [0 1 2 4 5 6 7 8]}"},
+		{"int 上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7, 8}), 8, "{8 18 [0 1 2 3 4 5 6 7]}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Receiver.Remove1(tt.arg); tt.Receiver.String() != tt.want {
+				t.Errorf("this.Remove(%v) => %v, want %v", tt.arg, tt.Receiver.String(), tt.want)
 			}
 		})
 	}

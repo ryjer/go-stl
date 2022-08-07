@@ -152,7 +152,7 @@ func (this *Vector[T]) Remove(lo, hi int) (removedNumber int) {
 	if lo < 0 {
 		lo = 0
 	}
-	if hi >= this.size {
+	if hi > this.size {
 		hi = this.size
 	}
 	if lo >= hi {
@@ -166,6 +166,13 @@ func (this *Vector[T]) Remove(lo, hi int) (removedNumber int) {
 	this.size = lo // 更新已用容量
 	// this.shrink()  // 自动缩容，可选
 	return (hi - lo)
+}
+
+// Remove1接口，移除单个元素，并返回被移除的元素
+func (this *Vector[T]) Remove1(r int) (removedElement T) {
+	removedElement = this.data[r]
+	this.Remove(r, r+1)
+	return
 }
 
 // 序列化方法
