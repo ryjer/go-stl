@@ -182,14 +182,14 @@ func (this *Vector[T]) Find(e T, lo, hi int) (rank int) {
 	for (lo < hi) && (e != this.data[hi-1]) { // 使用 hi 从后向前扫描，直到找到e或者到达lo
 		hi--
 	}
-	if (lo < hi) && this.data[hi-1] == e { // 当找到e时，返回对应秩
+	if (lo < hi) && this.data[hi-1] == e { // 当未到达lo且找到e时，返回对应秩
 		return hi - 1
 	} else { // 到达lo停止且没有找到时，返回-1
 		return -1
 	}
 }
 
-// 无序去重
+// 无序去重，可以保持低秩方向不同元素间的稳定性
 func (this *Vector[T]) Deduplicate() (removedNumber int) {
 	oldSize := this.size
 	i := 1
