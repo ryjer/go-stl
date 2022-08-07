@@ -146,6 +146,28 @@ func (this *Vector[T]) Insert(r int, element T) (rank int) {
 	return rank
 }
 
+// Remove 接口，移除 [lo,hi) 区间内的元素，并将其后的元素前移补全
+func (this *Vector[T]) Remove(lo, hi int) (removedNumber int) {
+	// lo，hi区间有效性检查
+	if lo < 0 {
+		lo = 0
+	}
+	if hi >= this.size {
+		hi = this.size
+	}
+	if lo >= hi {
+		return (hi - lo)
+	}
+	for hi < this.size { // [lo,hi) 依次前移 hi-lo 位
+		this.data[lo] = this.data[hi]
+		lo++
+		hi++
+	}
+	this.size = lo // 更新已用容量
+	// this.shrink()  // 自动缩容，可选
+	return (hi - lo)
+}
+
 // 序列化方法
 func (this *Vector[T]) String() string {
 	this.mutex.Lock()
