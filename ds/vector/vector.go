@@ -83,7 +83,7 @@ func (this *Vector[T]) expand(n int) {
 	}
 	// 容量不足，进行扩容
 	newCapacity := enoughCapacity(this.capacity)
-	this.capacity = newCapacity
+	this.capacity = newCapacity // 更新容量
 	newData := make([]T, newCapacity)
 	copy(newData, this.data[0:this.size])
 	this.data = newData
@@ -134,7 +134,17 @@ func (this *Vector[T]) Put(r int, newElement T) (err error) {
 	}
 }
 
-// Insert 接口，插入
+// Insert 接口，插入元素 element 到已被占用的秩r
+// 警告：不得插入未使用的秩处，尤其是最后一个秩之后的一个位置
+func (this *Vector[T]) Insert(r int, element T) (rank int) {
+	this.expand(1)                   // 检查扩容1个单位
+	for i := this.size; i > r; i-- { // 从后向前
+		this.data[i] = this.data[i-1] // 后继元素依次后移一个单位
+	}
+	this.data[r] = element // 置入新元素
+	this.size++            //更新容量
+	return rank
+}
 
 // 序列化方法
 func (this *Vector[T]) String() string {

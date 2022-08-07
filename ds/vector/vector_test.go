@@ -233,6 +233,34 @@ func Test_Put(t *testing.T) {
 	}
 }
 
+// 插入单个元素
+func Test_Insert(t *testing.T) {
+	type args[T num.Q] struct {
+		r int
+		e T
+	}
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		Receiver *Vector[T] // 接收对象
+		args     args[T]    // 单参数，秩
+		want     string     // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), args[int]{0, 0}, "{1 8 [0]}"},
+		{"int 下边界", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), args[int]{0, 0}, "{9 16 [0 1 2 3 4 5 6 7 8]}"},
+		{"int 中间随机", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), args[int]{5, 0}, "{9 16 [1 2 3 4 5 0 6 7 8]}"},
+		{"int 上边界", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), args[int]{7, 0}, "{9 16 [1 2 3 4 5 6 7 0 8]}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Receiver.Insert(tt.args.r, tt.args.e); tt.Receiver.String() != tt.want {
+				t.Errorf("this.Insert(%v, %v) => %v, want %v", tt.args.r, tt.args.e, tt.Receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
 // 用于计算最小目标容量的函数
 func Test_enoughCapacity(t *testing.T) {
 	tests := []struct {
