@@ -1,4 +1,4 @@
-module gitee/go-generic
+module gitee/go-stl
 
 go 1.18
 
