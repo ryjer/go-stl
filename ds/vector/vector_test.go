@@ -286,7 +286,7 @@ func Test_Remove(t *testing.T) {
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.receiver.Remove(tt.args.lo, tt.args.hi); tt.receiver.String() != tt.wants.receiver || got != tt.wants.ret {
-				t.Errorf("this.Remove(%v, %v) = %v, Receiver => %v,want %v %v", tt.args.lo, tt.args.hi, got, tt.receiver.String(), tt.wants.ret, tt.wants.receiver)
+				t.Errorf("this.Remove(%v, %v) = %v, Receiver => %v, want %v %v", tt.args.lo, tt.args.hi, got, tt.receiver.String(), tt.wants.ret, tt.wants.receiver)
 			}
 		})
 	}
@@ -314,7 +314,7 @@ func Test_Remove1(t *testing.T) {
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.receiver.Remove1(tt.arg); tt.receiver.String() != tt.wants.receiver || got != tt.wants.ret {
-				t.Errorf("this.Remove1(%v) = %v, Receiver => %v,want %v %v", tt.arg, got, tt.receiver.String(), tt.wants.ret, tt.wants.receiver)
+				t.Errorf("this.Remove1(%v) = %v, Receiver => %v, want %v %v", tt.arg, got, tt.receiver.String(), tt.wants.ret, tt.wants.receiver)
 			}
 		})
 	}
@@ -335,14 +335,43 @@ func Test_Find(t *testing.T) {
 	// int 类型测试
 	intTests := []testCase[int]{
 		// {"int 空向量测试", NewFromSlice([]int{}), args[int]{0, 0, 0}, 0},
+		{"int 0长失败查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{1, 0, 1}, -1},
+		{"int 全长失败查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{-1, 1, 8}, -1},
 		{"int 双下边界", NewFromSlice([]int{-1, 1, 2, 3, 4, 5, 6, 7}), args[int]{-1, 0, 7}, 0},
 		{"int 中间随机", NewFromSlice([]int{0, 1, -1, 3, 4, 5, 6, 7}), args[int]{-1, 1, 4}, 2},
-		{"int 双上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, -1}), args[int]{-1, 0, 7}, 7},
+		{"int 双上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, -1}), args[int]{-1, 0, 8}, 7},
+		{"int 超过上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, -1}), args[int]{-1, 0, 7}, -1},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.receiver.Find(tt.args.e, tt.args.lo, tt.args.hi); got != tt.want {
 				t.Errorf("this.Find(%v, %v, %v) = %v, want %v", tt.args.e, tt.args.lo, tt.args.hi, got, tt.want)
+			}
+		})
+	}
+}
+
+// 无序去重
+func Test_Deduplicate(t *testing.T) {
+	type wants[T num.Q] struct {
+		receiver string
+		ret      int
+	}
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		Receiver *Vector[T] // 接收对象
+		wants    wants[T]   // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		// {"int 空向量测试", NewFromSlice([]int{}), wants[int]{"{0 8 []}", 0}},
+		{"int 下边界", NewFromSlice([]int{0, 1, 2, 3, 3, 2, 1, 0}), wants[int]{"{4 16 [0 1 2 3]}", 4}},
+		{"int 中间随机", NewFromSlice([]int{0, 1, 2, 3, 4, 4, 3, 2, 1, 0}), wants[int]{"{5 20 [0 1 2 3 4]}", 5}},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.Deduplicate(); tt.Receiver.String() != tt.wants.receiver || got != tt.wants.ret {
+				t.Errorf("this.Deduplicate() = %v, Receiver => %v, want %v %v", got, tt.Receiver, tt.wants.ret, tt.wants.receiver)
 			}
 		})
 	}
