@@ -320,6 +320,34 @@ func Test_Remove1(t *testing.T) {
 	}
 }
 
+// 精确查找
+func Test_Find(t *testing.T) {
+	type args[T num.Q] struct {
+		e      T
+		lo, hi int
+	}
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		args     args[T]    // 单参数，秩
+		want     int        // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		// {"int 空向量测试", NewFromSlice([]int{}), args[int]{0, 0, 0}, 0},
+		{"int 双下边界", NewFromSlice([]int{-1, 1, 2, 3, 4, 5, 6, 7}), args[int]{-1, 0, 7}, 0},
+		{"int 中间随机", NewFromSlice([]int{0, 1, -1, 3, 4, 5, 6, 7}), args[int]{-1, 1, 4}, 2},
+		{"int 双上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, -1}), args[int]{-1, 0, 7}, 7},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.receiver.Find(tt.args.e, tt.args.lo, tt.args.hi); got != tt.want {
+				t.Errorf("this.Find(%v, %v, %v) = %v, want %v", tt.args.e, tt.args.lo, tt.args.hi, got, tt.want)
+			}
+		})
+	}
+}
+
 // 用于计算最小目标容量的函数
 func Test_enoughCapacity(t *testing.T) {
 	tests := []struct {

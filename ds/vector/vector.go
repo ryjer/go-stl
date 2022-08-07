@@ -107,7 +107,7 @@ func (this *Vector[T]) IsEmpty() bool {
 	}
 }
 
-// Get 接口，读取元素
+// 读取元素
 // 警告：当给出的秩r不在有效范围内时，会返回错误 err
 func (this *Vector[T]) Get(r int) (element T, err error) {
 	this.mutex.Lock()
@@ -120,7 +120,7 @@ func (this *Vector[T]) Get(r int) (element T, err error) {
 	}
 }
 
-// Put 接口，更改元素
+// 更改元素
 // 警告：当所给秩r不再有效范围内时，返回错误err
 func (this *Vector[T]) Put(r int, newElement T) (err error) {
 	this.mutex.Lock()
@@ -134,7 +134,7 @@ func (this *Vector[T]) Put(r int, newElement T) (err error) {
 	}
 }
 
-// Insert 接口，插入元素 element 到已被占用的秩r
+// 插入元素，插入元素 element 到已被占用的秩 r
 // 警告：不得插入未使用的秩处，尤其是最后一个秩之后的一个位置
 func (this *Vector[T]) Insert(r int, element T) (rank int) {
 	this.expand(1)                   // 检查扩容1个单位
@@ -146,7 +146,7 @@ func (this *Vector[T]) Insert(r int, element T) (rank int) {
 	return rank
 }
 
-// Remove 接口，移除 [lo,hi) 区间内的元素，并将其后的元素前移补全
+// 移除区间，并将其后的元素前移补全
 func (this *Vector[T]) Remove(lo, hi int) (removedNumber int) {
 	// lo，hi区间有效性检查
 	if lo < 0 {
@@ -168,11 +168,21 @@ func (this *Vector[T]) Remove(lo, hi int) (removedNumber int) {
 	return (hi - lo)
 }
 
-// Remove1接口，移除单个元素，并返回被移除的元素
+// 移除单个元素，其后元素依次前移补全，返回被移除的元素
 func (this *Vector[T]) Remove1(r int) (removedElement T) {
 	removedElement = this.data[r]
 	this.Remove(r, r+1)
 	return
+}
+
+// 精确区间查找，从后向前精确查找 [lo, hi) 区间内元素的e，返回第一个匹配元素的秩
+func (this *Vector[T]) Find(e T, lo, hi int) (rank int) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+	for (lo < hi) && (e != this.data[hi]) { // 使用 hi 从后向前扫描，直到到达lo
+		hi--
+	}
+	return hi
 }
 
 // 序列化方法
