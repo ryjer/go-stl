@@ -2,7 +2,6 @@ package vector
 
 import (
 	"fmt"
-	"sync"
 
 	num "gitee.com/ryjer/go-generic/number"
 )
@@ -13,10 +12,9 @@ const (
 
 // 数组列表数据结构，默认采用切片slice，使用数组需使用特定的方法
 type Vector[T num.Q] struct {
-	mutex    sync.Mutex // 并发控制锁
-	size     int        // 已用容量
-	capacity int        // 总容量
-	data     []T        // 使用内置切片作为动态数组，但总是满的(len==cap)
+	size     int // 已用容量
+	capacity int // 总容量
+	data     []T // 使用内置切片作为动态数组，但总是满的(len==cap)
 }
 
 // New 空构造
@@ -36,7 +34,6 @@ func NewFromSlice[T num.Q](elements []T) *Vector[T] {
 	copy(newSlice, elements)                     // 复制切片数据
 	// 构造新列表/向量
 	newVector := Vector[T]{
-		mutex:    sync.Mutex{},
 		size:     len(elements),
 		capacity: cap(newSlice),
 		data:     newSlice,
@@ -91,15 +88,11 @@ func (this *Vector[T]) expand(n int) {
 
 // Size 接口，返回已用空间
 func (this *Vector[T]) Size() (usedSize int) {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
 	return this.size
 }
 
 // 检查是否为空
 func (this *Vector[T]) IsEmpty() bool {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
 	if this.size == 0 {
 		return true
 	} else {
@@ -110,8 +103,6 @@ func (this *Vector[T]) IsEmpty() bool {
 // 读取元素
 // 警告：当给出的秩r不在有效范围内时，会返回错误 err
 func (this *Vector[T]) Get(r int) (element T, err error) {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
 	// 范围合法性检查
 	if 0 <= r && r < this.size {
 		return this.data[r], nil
@@ -123,8 +114,6 @@ func (this *Vector[T]) Get(r int) (element T, err error) {
 // 更改元素
 // 警告：当所给秩r不再有效范围内时，返回错误err
 func (this *Vector[T]) Put(r int, newElement T) (err error) {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
 	// 范围合法性检查
 	if 0 <= r && r < this.size {
 		this.data[r] = newElement
@@ -177,8 +166,6 @@ func (this *Vector[T]) Remove1(r int) (removedElement T) {
 
 // 精确区间查找，从后向前精确查找 [lo, hi) 区间内元素的e，返回第一个匹配元素的秩，没有找到就返回-1
 func (this *Vector[T]) Find(e T, lo, hi int) (rank int) {
-	// this.mutex.Lock()
-	// defer this.mutex.Unlock()
 	for (lo < hi) && (e != this.data[hi-1]) { // 使用 hi 从后向前扫描，直到找到e或者到达lo
 		hi--
 	}
@@ -203,10 +190,10 @@ func (this *Vector[T]) Deduplicate() (removedNumber int) {
 	return (oldSize - this.size)
 }
 
+// 遍历
+
 // 序列化方法
 func (this *Vector[T]) String() string {
-	this.mutex.Lock()
-	defer this.mutex.Unlock()
 	return fmt.Sprintf("{%v %v %v}", this.size, this.capacity, this.data[:this.size])
 }
 
