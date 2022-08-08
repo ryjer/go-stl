@@ -35,7 +35,7 @@ func NewFromSlice[T num.Q](elements []T) *Vector[T] {
 	// 构造新列表/向量
 	newVector := Vector[T]{
 		size:     len(elements),
-		capacity: cap(newSlice),
+		capacity: newCapacity,
 		data:     newSlice,
 	}
 	return &newVector
@@ -206,6 +206,25 @@ func (this *Vector[T]) Disordered() (disorderedNumber int) {
 		}
 	}
 	return count
+}
+
+// 有序向量 去重，返回被删除元素的个数
+func (this *Vector[T]) Uniquify() (deletedNumber int) {
+	// 空向量不处理
+	if this.size == 0 {
+		return 0
+	}
+	i, j := 0, 1
+	for ; j < this.size; j++ {
+		if this.data[i] != this.data[j] {
+			i++
+			this.data[i] = this.data[j]
+		}
+	}
+	i++
+	this.size = i // 更新size信息
+	// this.shrink()     // 缩容
+	return (j - i)
 }
 
 // 序列化方法

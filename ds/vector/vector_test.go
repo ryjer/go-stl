@@ -364,7 +364,7 @@ func Test_Deduplicate(t *testing.T) {
 	}
 	// int 类型测试
 	intTests := []testCase[int]{
-		// {"int 空向量测试", NewFromSlice([]int{}), wants[int]{"{0 8 []}", 0}},
+		{"int 空向量测试", NewFromSlice([]int{}), wants[int]{"{0 8 []}", 0}},
 		{"int 下边界", NewFromSlice([]int{0, 1, 2, 3, 3, 2, 1, 0}), wants[int]{"{4 16 [0 1 2 3]}", 4}},
 		{"int 中间随机", NewFromSlice([]int{0, 1, 2, 3, 4, 4, 3, 2, 1, 0}), wants[int]{"{5 20 [0 1 2 3 4]}", 5}},
 	}
@@ -422,6 +422,36 @@ func Test_Disordered(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.receiver.Disordered(); got != tt.want {
 				t.Errorf("this.Disordered() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// 有序向量去重
+func Test_Uniquify(t *testing.T) {
+	type wants struct {
+		receiver string
+		n        int
+	}
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		wants    wants      // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), wants{"{0 8 []}", 0}},
+		{"int 无重复", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), wants{"{8 16 [0 1 2 3 4 5 6 7]}", 0}},
+		{"int 下边界重复", NewFromSlice([]int{0, 0, 2, 3, 4, 5, 6, 7}), wants{"{7 16 [0 2 3 4 5 6 7]}", 1}},
+		{"int 中间重复", NewFromSlice([]int{0, 1, 2, 3, 3, 5, 6, 7}), wants{"{7 16 [0 1 2 3 5 6 7]}", 1}},
+		{"int 上边界重复", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 6}), wants{"{7 16 [0 1 2 3 4 5 6]}", 1}},
+		{"int 上下边界双重重复", NewFromSlice([]int{0, 0, 2, 3, 4, 5, 6, 6}), wants{"{6 16 [0 2 3 4 5 6]}", 2}},
+		{"int 大量重复", NewFromSlice([]int{3, 3, 3, 3, 5, 5, 5, 5, 5, 8, 8, 8, 13, 13, 13, 13}), wants{"{4 32 [3 5 8 13]}", 12}},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.receiver.Uniquify(); tt.receiver.String() != tt.wants.receiver || got != tt.wants.n {
+				t.Errorf("this.Uniquify() = %v, Receiver => %v, want %v %v", got, tt.receiver.String(), tt.wants.n, tt.wants.receiver)
 			}
 		})
 	}
