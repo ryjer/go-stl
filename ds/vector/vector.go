@@ -164,8 +164,11 @@ func (this *Vector[T]) Remove1(r int) (removedElement T) {
 	return
 }
 
-// 精确区间查找，从后向前精确查找 [lo, hi) 区间内元素的e，返回第一个匹配元素的秩，没有找到就返回-1
+// 无序向量精确区间查找，从后向前精确查找 [lo, hi) 区间内元素的e，返回第一个匹配元素的秩，没有找到就返回-1
 func (this *Vector[T]) Find(e T, lo, hi int) (rank int) {
+	if this.size == 0 { // 空向量返回-1
+		return -1
+	}
 	for (lo < hi) && (e != this.data[hi-1]) { // 使用 hi 从后向前扫描，直到找到e或者到达lo
 		hi--
 	}
@@ -178,6 +181,9 @@ func (this *Vector[T]) Find(e T, lo, hi int) (rank int) {
 
 // 无序去重，可以保持低秩方向不同元素间的稳定性
 func (this *Vector[T]) Deduplicate() (removedNumber int) {
+	if this.size == 0 { // 空向量直接返回
+		return 0
+	}
 	oldSize := this.size
 	i := 1
 	for i < this.size {
@@ -225,6 +231,24 @@ func (this *Vector[T]) Uniquify() (deletedNumber int) {
 	this.size = i // 更新size信息
 	// this.shrink()     // 缩容
 	return (j - i)
+}
+
+// 二分近似查找，在 [lo, hi) 区间查找元素 e，返回不大于e的元素的秩
+// 警告：对空向量无法进行查找，会返回-2
+func (this *Vector[T]) BinSearch(e T, lo, hi int) (rank int) {
+	if this.size == 0 { // 空向量不查找，直接返回-1
+		return -2
+	}
+	var mi int
+	for lo < hi { // 不变性：arr[0,lo) <= e < arr[hi,n)
+		mi = (lo + hi) / 2
+		if e < this.data[mi] { // e < this.data[mi]，e∈[0, mi)
+			hi = mi
+		} else { // this.data[mi] <= e，e∈(mi, hi)
+			lo = mi + 1
+		}
+	}
+	return lo - 1
 }
 
 // 序列化方法

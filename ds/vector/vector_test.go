@@ -334,7 +334,7 @@ func Test_Find(t *testing.T) {
 	}
 	// int 类型测试
 	intTests := []testCase[int]{
-		// {"int 空向量测试", NewFromSlice([]int{}), args[int]{0, 0, 0}, 0},
+		{"int 空向量测试", NewFromSlice([]int{}), args[int]{0, 0, 0}, -1},
 		{"int 0长失败查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{1, 0, 1}, -1},
 		{"int 全长失败查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{-1, 1, 8}, -1},
 		{"int 双下边界", NewFromSlice([]int{-1, 1, 2, 3, 4, 5, 6, 7}), args[int]{-1, 0, 7}, 0},
@@ -452,6 +452,38 @@ func Test_Uniquify(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.receiver.Uniquify(); tt.receiver.String() != tt.wants.receiver || got != tt.wants.n {
 				t.Errorf("this.Uniquify() = %v, Receiver => %v, want %v %v", got, tt.receiver.String(), tt.wants.n, tt.wants.receiver)
+			}
+		})
+	}
+}
+
+// 有序向量二分查找
+func Test_BinSearch(t *testing.T) {
+	type args[T num.Q] struct {
+		e      T
+		lo, hi int
+	}
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		args     args[T]    // 单参数，秩
+		want     int        // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), args[int]{0, 0, 0}, -2},
+		{"int 0长失败查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{0, 0, 0}, -1},
+		{"int 全长超下界查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{-1, 0, 8}, -1},
+		{"int 全长超上界查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{8, 0, 8}, 7},
+		{"int 双下边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{0, 0, 4}, 0},
+		{"int 中间随机", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{2, 1, 4}, 2},
+		{"int 双上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{7, 4, 8}, 7},
+		{"int 超过上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), args[int]{-1, 0, 7}, -1},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.receiver.BinSearch(tt.args.e, tt.args.lo, tt.args.hi); got != tt.want {
+				t.Errorf("this.BinSearch(%v, %v, %v) = %v, want %v", tt.args.e, tt.args.lo, tt.args.hi, got, tt.want)
 			}
 		})
 	}
