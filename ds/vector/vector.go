@@ -197,6 +197,17 @@ func (this *Vector[T]) Traverse(visit func(element *T)) {
 	}
 }
 
+// 逆序对统计
+func (this *Vector[T]) Disordered() (disorderedNumber int) {
+	var count int = 0
+	for i := 1; i < this.size; i++ {
+		if this.data[i-1] > this.data[i] {
+			count++
+		}
+	}
+	return count
+}
+
 // 序列化方法
 func (this *Vector[T]) String() string {
 	return fmt.Sprintf("{%v %v %v}", this.size, this.capacity, this.data[:this.size])

@@ -383,20 +383,45 @@ func add1[T num.Q](e *T) {
 }
 func Test_Traverse(t *testing.T) {
 	type testCase[T num.Q] struct {
-		name     string           // 测试用例名
-		receiver *Vector[T]       // 接收对象
-		arg      func(element *T) // 单参数，秩
-		want     string           // 预期结果
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		arg      func(e *T) // 遍历函数
+		want     string     // 预期结果
 	}
 	// int 类型测试
 	intTests := []testCase[int]{
 		{"int 空向量测试", NewFromSlice([]int{}), add1[int], "{0 8 []}"},
-		{"int 下边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), add1[int], "{8 16 [1 2 3 4 5 6 7 8]}"},
+		{"int 非空向量", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), add1[int], "{8 16 [1 2 3 4 5 6 7 8]}"},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.receiver.Traverse(tt.arg); tt.receiver.String() != tt.want {
-				t.Errorf("this.Traverse(add1) = , Receiver => %v, want %v", tt.receiver.String(), tt.want)
+				t.Errorf("this.Traverse(visit), Receiver => %v, want %v", tt.receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
+// 统计逆序对，非降序视作顺序
+func Test_Disordered(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		want     int        // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), 0},
+		{"int 递增", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), 0},
+		{"int 相同", NewFromSlice([]int{0, 1, 1, 3, 4, 5, 6, 7}), 0},
+		{"int 逆序下边界", NewFromSlice([]int{1, 0, 2, 3, 4, 5, 6, 7}), 1},
+		{"int 逆序中间随机", NewFromSlice([]int{0, 1, 2, 3, 2, 1, 6, 7}), 2},
+		{"int 逆序上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 0}), 1},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.receiver.Disordered(); got != tt.want {
+				t.Errorf("this.Disordered() = %v, want %v", got, tt.want)
 			}
 		})
 	}
