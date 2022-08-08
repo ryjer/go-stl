@@ -377,6 +377,31 @@ func Test_Deduplicate(t *testing.T) {
 	}
 }
 
+// 遍历处理，使用传入的函数
+func add1[T num.Q](e *T) {
+	*e = *e + 1
+}
+func Test_Traverse(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string           // 测试用例名
+		receiver *Vector[T]       // 接收对象
+		arg      func(element *T) // 单参数，秩
+		want     string           // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), add1[int], "{0 8 []}"},
+		{"int 下边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), add1[int], "{8 16 [1 2 3 4 5 6 7 8]}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.receiver.Traverse(tt.arg); tt.receiver.String() != tt.want {
+				t.Errorf("this.Traverse(add1) = , Receiver => %v, want %v", tt.receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
 // 用于计算最小目标容量的函数
 func Test_enoughCapacity(t *testing.T) {
 	tests := []struct {

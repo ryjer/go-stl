@@ -190,7 +190,12 @@ func (this *Vector[T]) Deduplicate() (removedNumber int) {
 	return (oldSize - this.size)
 }
 
-// 遍历
+// 遍历，使用参数中给定的函数，逐一处理向量中的元素
+func (this *Vector[T]) Traverse(visit func(element *T)) {
+	for i, _ := range this.data {
+		visit(&this.data[i])
+	}
+}
 
 // 序列化方法
 func (this *Vector[T]) String() string {
