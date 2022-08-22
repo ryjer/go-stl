@@ -233,6 +233,28 @@ func Test_Put(t *testing.T) {
 	}
 }
 
+// 清空向量
+func Test_Clear(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		Receiver *Vector[T] // 接收对象
+		want     string     // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), "{0 8 []}"},
+		{"int 短非空", NewFromSlice([]int{1, 2, 3}), "{0 8 []}"},
+		{"int 长非空", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8, 9}), "{0 8 []}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Receiver.Clear(); tt.Receiver.String() != tt.want {
+				t.Errorf("this.Clear() => %v, want %v", tt.Receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
 // 插入单个元素
 func Test_Insert(t *testing.T) {
 	type args[T num.Q] struct {

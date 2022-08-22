@@ -79,8 +79,8 @@ func (this *Vector[T]) expand(n int) {
 		return
 	}
 	// 容量不足，进行扩容
-	newCapacity := enoughCapacity(this.capacity)
-	this.capacity = newCapacity // 更新容量
+	newCapacity := enoughCapacity(newSize) // 根据预期已用容量计算新的容量
+	this.capacity = newCapacity            // 更新容量
 	newData := make([]T, newCapacity)
 	copy(newData, this.data[0:this.size])
 	this.data = newData
@@ -121,6 +121,13 @@ func (this *Vector[T]) Put(r int, newElement T) (err error) {
 	} else {
 		return fmt.Errorf("索引/秩越界 %v", r)
 	}
+}
+
+// 清空向量
+func (this *Vector[T]) Clear() {
+	this.data = make([]T, 0)
+	this.size = 0
+	this.capacity = defaultCapacity
 }
 
 // 插入元素，插入元素 element 到已被占用的秩 r
