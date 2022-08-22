@@ -233,7 +233,8 @@ func (this *Vector[T]) Uniquify() (deletedNumber int) {
 	return (j - i)
 }
 
-// 二分近似查找，在 [lo, hi) 区间查找元素 e，返回不大于e的元素的秩
+// 二分近似查找
+// 在 [lo, hi) 区间查找元素 e，返回不大于e的元素的秩
 // 警告：对空向量无法进行查找，会返回-2
 func (this *Vector[T]) BinSearch(e T, lo, hi int) (rank int) {
 	if this.size == 0 { // 空向量不查找，直接返回-1
@@ -249,6 +250,38 @@ func (this *Vector[T]) BinSearch(e T, lo, hi int) (rank int) {
 		}
 	}
 	return lo - 1
+}
+
+// 邻近二路归并接口，将向量中的已排序区间 [lo,mi) 和 [mi,hi) 合并成非降序序列
+func (this *Vector[T]) merge(lo, mi, hi int) {
+	tmpSlice := make([]T, hi-lo) // 一次性申请整个新的临时空间
+	copy(tmpSlice, this.data[lo:hi])
+	lenB := mi - lo
+	lenC := hi - mi
+	B := tmpSlice[:lenB]                                 // 切前半部分 B
+	C := tmpSlice[lenB:]                                 // 切后半部分 C
+	for a, b, c := lo, 0, 0; (b < lenB) || (c < lenC); { // 两个指针都越界后结束
+		if (b < lenB) && (lenC <= c || B[b] <= C[c]) { // 首先，索引b不应该越界。在此前提下，如果c索引越界则表示数组C已用光，可以直接使用数组B中的元素。或者B中的元素更小
+			this.data[a] = B[b]
+			b++
+		} else if (c < lenC) && (lenB <= b || C[c] < B[b]) {
+			this.data[a] = C[c]
+			c++
+		}
+		a++
+	}
+}
+
+// 归并排序，对 [lo, hi) 范围内的元素进行排序
+// 递归版本，通常够用
+func (this *Vector[T]) MergeSort(lo, hi int) {
+	if hi-lo < 2 { // 递归基
+		return
+	}
+	mi := (lo + hi) / 2
+	this.MergeSort(lo, mi) // 排序前半部分 [lo, mi)
+	this.MergeSort(mi, hi) // 排序后半部分 [mi, hi)
+	this.merge(lo, mi, hi) // 将两个有序部分合并
 }
 
 // 序列化方法

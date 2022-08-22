@@ -466,7 +466,7 @@ func Test_BinSearch(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string     // 测试用例名
 		receiver *Vector[T] // 接收对象
-		args     args[T]    // 单参数，秩
+		args     args[T]    // 多参数
 		want     int        // 预期结果
 	}
 	// int 类型测试
@@ -484,6 +484,65 @@ func Test_BinSearch(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.receiver.BinSearch(tt.args.e, tt.args.lo, tt.args.hi); got != tt.want {
 				t.Errorf("this.BinSearch(%v, %v, %v) = %v, want %v", tt.args.e, tt.args.lo, tt.args.hi, got, tt.want)
+			}
+		})
+	}
+}
+
+// 邻近归并函数测试
+func Test_merge(t *testing.T) {
+	type args struct {
+		lo, mi, hi int
+	}
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		args     args       // 多参数
+		want     string     // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), args{0, 0, 0}, "{0 8 []}"},
+		{"int 0长归并", NewFromSlice([]int{5, 8, 13, 21, 2, 4, 10, 29}), args{0, 0, 0}, "{8 16 [5 8 13 21 2 4 10 29]}"},
+		{"int 全长归并", NewFromSlice([]int{5, 8, 13, 21, 2, 4, 10, 29}), args{0, 4, 8}, "{8 16 [2 4 5 8 10 13 21 29]}"},
+		{"int 上界部分归并", NewFromSlice([]int{5, 8, 2, 4, 2, 4, 10, 29}), args{0, 2, 4}, "{8 16 [2 4 5 8 2 4 10 29]}"},
+		{"int 下届部分归并", NewFromSlice([]int{5, 8, 13, 21, 5, 8, 2, 4}), args{4, 6, 8}, "{8 16 [5 8 13 21 2 4 5 8]}"},
+		{"int 中间部分随机", NewFromSlice([]int{5, 8, 13, 21, 2, 4, 10, 29}), args{2, 4, 6}, "{8 16 [5 8 2 4 13 21 10 29]}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.receiver.merge(tt.args.lo, tt.args.mi, tt.args.hi); tt.receiver.String() != tt.want {
+				t.Errorf("this.merge(%v, %v, %v) => %v, want %v", tt.args.lo, tt.args.mi, tt.args.hi, tt.receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
+// 二路归并排序测试
+func Test_MergeSort(t *testing.T) {
+	type args struct {
+		lo, hi int
+	}
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		args     args       // 多参数
+		want     string     // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), args{0, 0}, "{0 8 []}"},
+		{"int 0长归并", NewFromSlice([]int{5, 8, 13, 21, 2, 4, 10, 29}), args{0, 0}, "{8 16 [5 8 13 21 2 4 10 29]}"},
+		{"int 全长归并", NewFromSlice([]int{5, 8, 13, 21, 2, 4, 10, 29}), args{0, 8}, "{8 16 [2 4 5 8 10 13 21 29]}"},
+		{"int 上界部分归并", NewFromSlice([]int{5, 8, 2, 4, 2, 4, 10, 29}), args{0, 4}, "{8 16 [2 4 5 8 2 4 10 29]}"},
+		{"int 下届部分归并", NewFromSlice([]int{5, 8, 13, 21, 5, 8, 2, 4}), args{4, 8}, "{8 16 [5 8 13 21 2 4 5 8]}"},
+		{"int 中间部分随机", NewFromSlice([]int{5, 8, 13, 21, 2, 4, 10, 29}), args{2, 6}, "{8 16 [5 8 2 4 13 21 10 29]}"},
+		{"int 中间部分随机", NewFromSlice([]int{5, 8, 13, 21, 2, 4, 10, 29}), args{1, 7}, "{8 16 [5 2 4 8 10 13 21 29]}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.receiver.MergeSort(tt.args.lo, tt.args.hi); tt.receiver.String() != tt.want {
+				t.Errorf("this.MergeSort(%v, %v) => %v, want %v", tt.args.lo, tt.args.hi, tt.receiver.String(), tt.want)
 			}
 		})
 	}
