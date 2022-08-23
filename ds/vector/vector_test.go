@@ -393,6 +393,29 @@ func Test_PopBack(t *testing.T) {
 	}
 }
 
+// 翻转
+func Test_Reverse(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		Receiver *Vector[T] // 接收对象
+		want     string     // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), "{0 8 []}"},
+		{"int 短翻转", NewFromSlice([]int{1, 2, 3, 4}), "{4 8 [4 3 2 1]}"},
+		{"int 中翻转", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7}), "{7 8 [7 6 5 4 3 2 1]}"},
+		{"int 长翻转", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), "{8 16 [8 7 6 5 4 3 2 1]}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Receiver.Reverse(); tt.Receiver.String() != tt.want {
+				t.Errorf("this.Reverse() => %v, want %v", tt.Receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
 // 精确查找
 func Test_Find(t *testing.T) {
 	type args[T num.Q] struct {

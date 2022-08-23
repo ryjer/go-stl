@@ -130,7 +130,7 @@ func (this *Vector[T]) Clear() {
 	this.capacity = defaultCapacity
 }
 
-// 插入元素，插入元素 element 到已被占用的秩 r
+// 插入元素，插入元素 element 到已被占用的秩 r，原向量中自r及其后的元素依次后移一位
 // 警告：不得插入未使用的秩处，尤其是最后一个秩之后的一个位置
 func (this *Vector[T]) Insert(r int, element T) (rank int) {
 	this.expand(1)                   // 检查扩容1个单位
@@ -165,7 +165,7 @@ func (this *Vector[T]) Remove(lo, hi int) (removedNumber int) {
 }
 
 // 移除单个元素，其后元素依次前移补全，返回被移除的元素
-// 警告：不会检查对象是否为空，请调用方自行保证
+// 警告：不会检查对象是否为空，请调用方自行保证，建议配合 IsEmpty() 控制
 func (this *Vector[T]) Remove1(r int) (removedElement T) {
 	removedElement = this.data[r]
 	this.Remove(r, r+1)
@@ -182,6 +182,13 @@ func (this *Vector[T]) PushBack(e T) {
 func (this *Vector[T]) PopBack() (element T) {
 	element = this.Remove1(this.size - 1)
 	return element
+}
+
+// 翻转, 以向量中心点为界，互换对称位置上的元素
+func (this *Vector[T]) Reverse() {
+	for i := 0; i < this.size/2; i++ {
+		this.data[i], this.data[this.size-1-i] = this.data[this.size-1-i], this.data[i]
+	}
 }
 
 // 无序向量精确区间查找，从后向前精确查找 [lo, hi) 区间内元素的e，返回第一个匹配元素的秩，没有找到就返回-1
