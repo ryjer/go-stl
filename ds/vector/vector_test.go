@@ -328,7 +328,7 @@ func Test_Remove1(t *testing.T) {
 	}
 	// int 类型测试
 	intTests := []testCase[int]{
-		{"int 空向量测试", NewFromSlice([]int{}), 0, wants[int]{"{0 8 []}", 0}},
+		// {"int 空向量测试", NewFromSlice([]int{}), 0, wants[int]{"{0 8 []}", 0}},
 		{"int 下边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7, 8}), 0, wants[int]{"{8 18 [1 2 3 4 5 6 7 8]}", 0}},
 		{"int 中间随机", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7, 8}), 4, wants[int]{"{8 18 [0 1 2 3 5 6 7 8]}", 4}},
 		{"int 上边界", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7, 8}), 8, wants[int]{"{8 18 [0 1 2 3 4 5 6 7]}", 8}},
@@ -337,6 +337,57 @@ func Test_Remove1(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.receiver.Remove1(tt.arg); tt.receiver.String() != tt.wants.receiver || got != tt.wants.ret {
 				t.Errorf("this.Remove1(%v) = %v, Receiver => %v, want %v %v", tt.arg, got, tt.receiver.String(), tt.wants.ret, tt.wants.receiver)
+			}
+		})
+	}
+}
+
+// 尾部压入一个元素
+func Test_PushBack(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		Receiver *Vector[T] // 接收对象
+		arg      T          // 单参数，秩
+		want     string     // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量测试", NewFromSlice([]int{}), 0, "{1 8 [0]}"},
+		{"int 短追加", NewFromSlice([]int{1, 2, 3, 4}), 5, "{5 8 [1 2 3 4 5]}"},
+		{"int 中追加", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7}), 8, "{8 8 [1 2 3 4 5 6 7 8]}"},
+		{"int 扩容追加", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), 9, "{9 16 [1 2 3 4 5 6 7 8 9]}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Receiver.PushBack(tt.arg); tt.Receiver.String() != tt.want {
+				t.Errorf("this.PushBack(%v) => %v, want %v", tt.arg, tt.Receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
+// 尾部弹出一个元素
+func Test_PopBack(t *testing.T) {
+	type wants[T num.Q] struct {
+		receiver string
+		ret      int
+	}
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		wants    wants[T]   // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		// {"int 空向量测试", NewFromSlice([]int{}), wants[int]{"{0 8 []}", 0}},
+		{"int 短弹出", NewFromSlice([]int{0, 1, 2, 3}), wants[int]{"{3 8 [0 1 2]}", 3}},
+		{"int 中弹出", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), wants[int]{"{7 16 [0 1 2 3 4 5 6]}", 7}},
+		{"int 长弹出", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7, 8}), wants[int]{"{8 18 [0 1 2 3 4 5 6 7]}", 8}},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.receiver.PopBack(); tt.receiver.String() != tt.wants.receiver || got != tt.wants.ret {
+				t.Errorf("this.PopBack() = %v, Receiver => %v, want %v %v", got, tt.receiver.String(), tt.wants.ret, tt.wants.receiver)
 			}
 		})
 	}
