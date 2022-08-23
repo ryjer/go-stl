@@ -260,6 +260,13 @@ func (this *Vector[T]) Uniquify() (deletedNumber int) {
 	return (j - i)
 }
 
+// 有序向量查找
+// 警告：不会检查是否为空向量，请调用方自行检查控制
+func (this *Vector[T]) Search(e T) (rank int) {
+	rank = this.BinSearch(e, 0, this.size)
+	return rank
+}
+
 // 二分近似查找
 // 在 [lo, hi) 区间查找元素 e，返回不大于e的元素的秩
 // 警告：对空向量无法进行查找，会返回-2

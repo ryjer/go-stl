@@ -553,6 +553,30 @@ func Test_Uniquify(t *testing.T) {
 	}
 }
 
+// 有序向量查找
+func Test_Search(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		receiver *Vector[T] // 接收对象
+		arg      T          // 参数
+		want     int        // 预期结果
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		// {"int 空向量测试", NewFromSlice([]int{}), 0, -1},
+		{"int 下界查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), 0, 0},
+		{"int 中间随机查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), 4, 4},
+		{"int 上界查找", NewFromSlice([]int{0, 1, 2, 3, 4, 5, 6, 7}), 7, 7},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.receiver.Search(tt.arg); got != tt.want {
+				t.Errorf("this.Search(%v) = %v, want %v", tt.arg, got, tt.want)
+			}
+		})
+	}
+}
+
 // 有序向量二分查找
 func Test_BinSearch(t *testing.T) {
 	type args[T num.Q] struct {
