@@ -1,4 +1,4 @@
-module gitee/ryjer/go-stl
+module gitee.com/ryjer/go-stl
 
 go 1.18
 
