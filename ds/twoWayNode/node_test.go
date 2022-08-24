@@ -147,6 +147,32 @@ func Test_Get(t *testing.T) {
 	}
 }
 
+// 修改元素
+func Test_Put(t *testing.T) {
+	type want[T num.Q] struct {
+		ret     T
+		newData T
+	}
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *Node[T]
+		arg      T
+		want     want[T]
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 测试", &Node[int]{1, nil, nil}, 1, want[int]{1, 1}},
+		{"int 随机测试", &Node[int]{0, nil, nil}, 8, want[int]{0, 8}},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.Put(tt.arg); !(got == tt.want.ret && tt.Receiver.data == tt.want.newData) {
+				t.Errorf("Receiver.Get() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 // 获取前驱节点
 func Test_PreNode(t *testing.T) {
 	type testCase[T num.Q] struct {
@@ -200,7 +226,7 @@ func Test_NextNode(t *testing.T) {
 }
 
 // 作为前驱节点插入
-func Test_insertAsPre(t *testing.T) {
+func Test_InsertAsPre(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string
 		Receiver *Node[T]
@@ -218,15 +244,15 @@ func Test_insertAsPre(t *testing.T) {
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.Receiver.insertAsPre(tt.arg); !((headNode.next == got && got.pre == headNode) && (got.next == tailNode && tailNode.pre == got)) {
-				t.Errorf("this.insertAsPre() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
+			if got := tt.Receiver.InsertAsPre(tt.arg); !((headNode.next == got && got.pre == headNode) && (got.next == tailNode && tailNode.pre == got)) {
+				t.Errorf("this.InsertAsPre() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
 			}
 		})
 	}
 }
 
 // 作为后继节点插入
-func Test_insertAsNext(t *testing.T) {
+func Test_InsertAsNext(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string
 		Receiver *Node[T]
@@ -244,8 +270,33 @@ func Test_insertAsNext(t *testing.T) {
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.Receiver.insertAsNext(tt.arg); !((headNode.next == got && got.pre == headNode) && (got.next == tailNode && tailNode.pre == got)) {
-				t.Errorf("this.insertAsNext() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
+			if got := tt.Receiver.InsertAsNext(tt.arg); !((headNode.next == got && got.pre == headNode) && (got.next == tailNode && tailNode.pre == got)) {
+				t.Errorf("this.InsertAsNext() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
+			}
+		})
+	}
+}
+
+func Test_Remove(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *Node[T]
+		want     T
+	}
+	// int 类型测试
+	// 构造一个简单的 双向链表
+	headNode := New(0)
+	tailNode := New(8)
+	headNode.next = tailNode // 将两个节点互相连接
+	tailNode.pre = headNode
+	intTests := []testCase[int]{
+		{"int 中间态移除", FullNew[int](2, headNode, tailNode), 2},
+		{"int 正常态移除", headNode.InsertAsNext(4), 4}, // 在 head节点后插入一个节点，形成  head(2) <-> new(4) <-> tail(8) 的结构
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.Remove(); !(headNode.next == tailNode && tailNode.pre == headNode) {
+				t.Errorf("this.Remove() = %v, want %v", got, tt.want)
 			}
 		})
 	}

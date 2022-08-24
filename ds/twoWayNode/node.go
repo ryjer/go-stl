@@ -28,6 +28,7 @@ func New[T num.Q](e T) *Node[T] {
 }
 
 // 节点完全构造，提供节点的所有信息进行构造
+// 提示：不会修改参数中被指向的节点，调用方需要自行调整被指向节点的指针信息
 func FullNew[T num.Q](e T, pre, next *Node[T]) *Node[T] {
 	return &Node[T]{
 		data: e,
@@ -41,6 +42,13 @@ func (this *Node[T]) Get() (element T) {
 	return this.data
 }
 
+// 修改元素，并返回原元素
+func (this *Node[T]) Put(e T) (element T) {
+	element = this.data
+	this.data = e
+	return element
+}
+
 // 前一节点，返回当前节点的直接前驱节点的引用
 func (this *Node[T]) PreNode() *Node[T] {
 	return this.pre
@@ -52,7 +60,7 @@ func (this *Node[T]) NextNode() *Node[T] {
 }
 
 // 前插入算法，作为当前节点的直接前驱插入，返回插入节点的地址
-func (this *Node[T]) insertAsPre(e T) (xnode *Node[T]) {
+func (this *Node[T]) InsertAsPre(e T) (xnode *Node[T]) {
 	xnode = FullNew(e, this.pre, this)
 	this.pre.next = xnode
 	this.pre = xnode
@@ -60,9 +68,19 @@ func (this *Node[T]) insertAsPre(e T) (xnode *Node[T]) {
 }
 
 // 后插入算法，作为当前节点的直接后继插入，返回插入节点的地址
-func (this *Node[T]) insertAsNext(e T) (xnode *Node[T]) {
+func (this *Node[T]) InsertAsNext(e T) (xnode *Node[T]) {
 	xnode = FullNew(e, this, this.next)
 	this.next.pre = xnode // 重定位前驱节点的 next 指针
 	this.next = xnode     // 重定位后继节点的 pre 指针
 	return xnode
+}
+
+// 移除节点，返回被移除节点内的元素值
+func (this *Node[T]) Remove() (element T) {
+	element = this.data
+	pre := this.pre
+	next := this.next
+	pre.next = next
+	next.pre = pre
+	return
 }
