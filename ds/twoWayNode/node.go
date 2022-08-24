@@ -60,9 +60,12 @@ func (this *Node[T]) NextNode() *Node[T] {
 }
 
 // 前插入算法，作为当前节点的直接前驱插入，返回插入节点的地址
+// 提示：可以在链表的头部插入，即使头部没有前驱节点
 func (this *Node[T]) InsertAsPre(e T) (xnode *Node[T]) {
 	xnode = FullNew(e, this.pre, this)
-	this.pre.next = xnode
+	if this.pre != nil { // 当前驱哨兵存在时
+		this.pre.next = xnode // 重定位前驱哨兵的 next 指针
+	}
 	this.pre = xnode
 	return xnode
 }
@@ -70,8 +73,10 @@ func (this *Node[T]) InsertAsPre(e T) (xnode *Node[T]) {
 // 后插入算法，作为当前节点的直接后继插入，返回插入节点的地址
 func (this *Node[T]) InsertAsNext(e T) (xnode *Node[T]) {
 	xnode = FullNew(e, this, this.next)
-	this.next.pre = xnode // 重定位前驱节点的 next 指针
-	this.next = xnode     // 重定位后继节点的 pre 指针
+	if this.next != nil { // 当后继哨兵存在时
+		this.next.pre = xnode // 重定位后继哨兵的 pre 指针
+	}
+	this.next = xnode // 重定位后继节点的 pre 指针
 	return xnode
 }
 

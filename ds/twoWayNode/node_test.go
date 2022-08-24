@@ -240,15 +240,22 @@ func Test_InsertAsPre(t *testing.T) {
 	headNode.next = tailNode // 将两个节点互相连接
 	tailNode.pre = headNode
 	intTests := []testCase[int]{
-		{"int 插入测试", tailNode, 1, &Node[int]{1, headNode, tailNode}}, // 只支持一个测试用例
+		{"int 插入测试", tailNode, 1, &Node[int]{1, headNode, tailNode}}, // 在 head <-> tail 中插入一个节点，变为 head(0) <-> new(1) <-> tail(8)
+		{"int 无前驱哨兵", headNode, -2, &Node[int]{-2, nil, headNode}},   // 在 head 前插入一个节点，变为 new(-2) <-> head(0) <-> (1) <->tail(8)
 	}
-	for _, tt := range intTests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.Receiver.InsertAsPre(tt.arg); !((headNode.next == got && got.pre == headNode) && (got.next == tailNode && tailNode.pre == got)) {
-				t.Errorf("this.InsertAsPre() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
-			}
-		})
-	}
+	// 有前驱插入
+	t.Run(intTests[0].name, func(t *testing.T) {
+		if got := intTests[0].Receiver.InsertAsPre(intTests[0].arg); !((headNode.next == got && tailNode.pre == got) && got.DeepEqual(intTests[0].want)) {
+			t.Errorf("this.InsertAsPre() = %v, Receiver => %v, want %v", got, intTests[0].Receiver, intTests[0].want)
+		}
+	})
+	// 提示，此时链表已变为 head(0) <-> (1) <-> tail(8)
+	// 无前驱插入
+	t.Run(intTests[1].name, func(t *testing.T) {
+		if got := intTests[1].Receiver.InsertAsPre(intTests[1].arg); !(headNode.pre == got && got.DeepEqual(intTests[1].want)) {
+			t.Errorf("this.InsertAsPre() = %v, Receiver => %v, want %v", got, intTests[1].Receiver, intTests[1].want)
+		}
+	})
 }
 
 // 作为后继节点插入
@@ -266,15 +273,21 @@ func Test_InsertAsNext(t *testing.T) {
 	headNode.next = tailNode // 将两个节点互相连接
 	tailNode.pre = headNode
 	intTests := []testCase[int]{
-		{"int 插入测试", headNode, 1, &Node[int]{1, headNode, tailNode}}, // 只支持一个测试用例
+		{"int 插入测试", headNode, 1, &Node[int]{1, headNode, tailNode}}, // 在 head <-> tail 中插入一个节点，变为： head(0) <-> new(1) <-> tail(8)
+		{"int 无后继哨兵", tailNode, 16, &Node[int]{16, tailNode, nil}},   //  在 tail 后入一个节点，变为： head(0) <-> (1) <-> tail(8) <-> new(16)
 	}
-	for _, tt := range intTests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.Receiver.InsertAsNext(tt.arg); !((headNode.next == got && got.pre == headNode) && (got.next == tailNode && tailNode.pre == got)) {
-				t.Errorf("this.InsertAsNext() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
-			}
-		})
-	}
+	// 有后继哨兵插入
+	t.Run(intTests[0].name, func(t *testing.T) {
+		if got := intTests[0].Receiver.InsertAsNext(intTests[0].arg); !((headNode.next == got && tailNode.pre == got) && got.DeepEqual(intTests[0].want)) {
+			t.Errorf("this.InsertAsNext() = %v, Receiver => %v, want %v", got, intTests[0].Receiver, intTests[0].want)
+		}
+	})
+	// 无后继哨兵插入
+	t.Run(intTests[1].name, func(t *testing.T) {
+		if got := intTests[1].Receiver.InsertAsNext(intTests[1].arg); !(tailNode.next == got && got.DeepEqual(intTests[1].want)) {
+			t.Errorf("this.InsertAsNext() = %v, Receiver => %v, want %v", got, intTests[1].Receiver, intTests[1].want)
+		}
+	})
 }
 
 func Test_Remove(t *testing.T) {
