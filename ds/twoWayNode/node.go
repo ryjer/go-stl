@@ -11,7 +11,7 @@ type Node[T num.Q] struct {
 }
 
 // 节点值判等，底层值相等，会比较其中的指针指向
-func (this *Node[T]) deepEqual(another *Node[T]) (equal bool) {
+func (this *Node[T]) DeepEqual(another *Node[T]) (equal bool) {
 	if (this.data == another.data) && (this.pre == another.pre) && (this.next == another.next) {
 		return true
 	} else {

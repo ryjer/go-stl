@@ -36,7 +36,7 @@ func Test_deepEquals(t *testing.T) {
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.Receiver.deepEqual(tt.arg); got != tt.want {
+			if got := tt.Receiver.DeepEqual(tt.arg); got != tt.want {
 				t.Errorf("this.valueEquals(%v) = %v, want %v %v", tt.arg, got, tt.want, tt.Receiver)
 			}
 		})
@@ -57,7 +57,7 @@ func Test_New(t *testing.T) {
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := New(tt.arg); !got.deepEqual(tt.want) {
+			if got := New(tt.arg); !got.DeepEqual(tt.want) {
 				t.Errorf("New() = %v, want %v", got, tt.want)
 			}
 		})
@@ -69,7 +69,7 @@ func Test_New(t *testing.T) {
 	}
 	for _, tt := range uintTests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := New(tt.arg); !got.deepEqual(tt.want) {
+			if got := New(tt.arg); !got.DeepEqual(tt.want) {
 				t.Errorf("New() = %v, want %v", got, tt.want)
 			}
 		})
@@ -81,7 +81,7 @@ func Test_New(t *testing.T) {
 	}
 	for _, tt := range float64Tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := New(tt.arg); !got.deepEqual(tt.want) {
+			if got := New(tt.arg); !got.DeepEqual(tt.want) {
 				t.Errorf("New() = %v, want %v", got, tt.want)
 			}
 		})
@@ -119,7 +119,7 @@ func Test_FullNew(t *testing.T) {
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FullNew(tt.args.e, tt.args.pre, tt.args.next); !got.deepEqual(tt.want) {
+			if got := FullNew(tt.args.e, tt.args.pre, tt.args.next); !got.DeepEqual(tt.want) {
 				t.Errorf("FullNew() = %v, want %v", got, tt.want)
 			}
 		})
