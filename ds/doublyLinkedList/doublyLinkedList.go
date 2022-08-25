@@ -40,6 +40,11 @@ func (this *DoublyLinkedList[T]) firstNode() *Node[T] {
 	return this.header.next
 }
 
+// 内部方法：获取末节点
+func (this *DoublyLinkedList[T]) lastNode() *Node[T] {
+	return this.trailer.pre
+}
+
 // 从已有列表复制构造
 // func NewFormList[T num.Q](p *Node[T], n int) *DoublyLinkedList[T] {
 // 	newList := _init[T]()
@@ -100,17 +105,29 @@ func (this *DoublyLinkedList[T]) Get(r int) (element T) {
 
 // }
 
-// // 查找, 在节点p之前（不包括p本身）的n个节点中，从p向前查找元素e，返回第一个包含元素e的节点的地址
-// func (this *DoublyLinkedList[T]) Find(e T, n int, p *Node[T]) *Node[T] {
-// 	for 0 < n {
-// 		p = p.pre
-// 		if e == p.data {
-// 			return p
-// 		}
-// 		n--
-// 	}
-// 	return nil
-// }
+// 向前查找, 在节点p之前（不包括p本身）的n个节点中，从p向前查找元素e，返回第一个包含元素e的节点的地址
+func (this *DoublyLinkedList[T]) FindBefore(e T, n int, p *Node[T]) (targetNode *Node[T]) {
+	for 0 < n {
+		p = p.pre
+		if e == p.data {
+			return p
+		}
+		n--
+	}
+	return nil
+}
+
+// 向后查找, 在节点p之后（不包括p本身）的n个节点中，从p向后查找元素e，返回第一个包含元素e的节点的地址
+func (this *DoublyLinkedList[T]) FindAfter(e T, p *Node[T], n int) (targetNode *Node[T]) {
+	for 0 < n {
+		p = p.next
+		if e == p.data {
+			return p
+		}
+		n--
+	}
+	return nil
+}
 
 // // 列表值判等，以值相等原则进行比较
 // // 定义：一个列表在值层次上的相等包括：容量、链表中的元素序列 相等
