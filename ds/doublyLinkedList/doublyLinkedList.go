@@ -37,21 +37,24 @@ func New[T num.Q]() *DoublyLinkedList[T] {
 
 // 内部方法：获取首节点
 func (this *DoublyLinkedList[T]) firstNode() *Node[T] {
-	return this.header.next
+	return this.header.next // 头哨兵的后继
 }
 
 // 内部方法：获取末节点
 func (this *DoublyLinkedList[T]) lastNode() *Node[T] {
-	return this.trailer.pre
+	return this.trailer.pre // 尾哨兵的前驱
 }
 
-// 从已有列表复制构造
-// func NewFormList[T num.Q](p *Node[T], n int) *DoublyLinkedList[T] {
-// 	newList := _init[T]()
-// 	for i := 0; i < n; i++ {
-
-// 	}
-// }
+// 从已有列表复制构造，从自节点p起（包含p）的n个节点复制到新列表中
+func NewFormList[T num.Q](p *Node[T], n int) (newList *DoublyLinkedList[T]) {
+	newList = Init[T]()
+	for 0 < n {
+		newList.InsertAsLast(p.data) // 新列表插入一个新末节点
+		p = p.next                   // 当前节点p后移一个
+		n--                          // n计数器递减
+	}
+	return newList
+}
 
 // // 清空列表
 // func (this *DoublyLinkedList[T]) Clear() {
@@ -86,24 +89,29 @@ func (this *DoublyLinkedList[T]) Get(r int) (element T) {
 	return currentNode.data
 }
 
-// // 插入前驱节点，将e作为p的前驱插入，返回新节点的地址
-// func (this *DoublyLinkedList[T]) InsertBefore(p *Node[T], e T) *Node[T] {
-// 	this.size++
-// 	newNode := p.InsertAsPre(e)
-// 	return newNode
-// }
+// 插入前驱节点，将e作为p的前驱插入，返回新节点的地址
+func (this *DoublyLinkedList[T]) InsertBefore(p *Node[T], e T) *Node[T] {
+	newNode := p.InsertAsPre(e) // 插入新前驱 newNode
+	this.size++                 // 更新列表容量
+	return newNode
+}
 
-// // 插入后继节点，将e作为p的后继插入，返回新节点的地址
-// func (this *DoublyLinkedList[T]) InsertAfter(p *Node[T], e T) *Node[T] {
-// 	this.size++
-// 	newNode := p.InsertAsNext(e)
-// 	return newNode
-// }
+// 插入后继节点，将e作为p的后继插入，返回新节点的地址
+func (this *DoublyLinkedList[T]) InsertAfter(p *Node[T], e T) *Node[T] {
+	newNode := p.InsertAsNext(e) // 插入新后继 newNode
+	this.size++                  // 更新列表容量
+	return newNode
+}
 
-// // 作为首节点插入，将e作为整个列表的首节点插入
-// func (this *DoublyLinkedList[T]) InsertAsFirst(e T) {
+// 作为首节点插入，将元素e作为整个列表的首节点插入
+func (this *DoublyLinkedList[T]) InsertAsFirst(e T) *Node[T] {
+	return this.InsertAfter(this.header, e) // 在头哨兵之后插入
+}
 
-// }
+// 作为末节点插入，将元素e作为整个列表的末节点插入
+func (this *DoublyLinkedList[T]) InsertAsLast(e T) *Node[T] {
+	return this.InsertBefore(this.trailer, e) // 在尾哨兵之前插入
+}
 
 // 向前查找, 在节点p之前（不包括p本身）的n个节点中，从p向前查找元素e，返回第一个包含元素e的节点的地址
 func (this *DoublyLinkedList[T]) FindBefore(e T, n int, p *Node[T]) (targetNode *Node[T]) {

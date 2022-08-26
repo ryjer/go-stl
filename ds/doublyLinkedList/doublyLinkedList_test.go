@@ -90,6 +90,162 @@ func Test_Get(t *testing.T) {
 	}
 }
 
+// 作为前驱插入
+func Test_InsertBefore(t *testing.T) {
+	type args[T num.Q] struct {
+		p *Node[T]
+		e T
+	}
+	type testCase[T num.Q] struct {
+		name     string               // 测试用例名
+		Receiver *DoublyLinkedList[T] // 接收对象
+		args     args[T]              // 多参数
+		want     T                    // 目标节点中的元素值
+	}
+	// int 类型测试，只插入一个节点
+	// 构造链表
+	intList := New[int]()
+	node0 := intList.trailer.InsertAsPre(0)
+	intList.trailer.InsertAsPre(1)
+	intList.trailer.InsertAsPre(2)
+	node3 := intList.trailer.InsertAsPre(3)
+	intList.trailer.InsertAsPre(4)
+	node5 := intList.trailer.InsertAsPre(5)
+	intList.size = 6
+	intTests := []testCase[int]{
+		{"int 首节点之前插入", intList, args[int]{node0, -1}, -1},
+		{"int 末节点之前插入", intList, args[int]{node5, -1}, -1},
+		{"int 中间随机插入", intList, args[int]{node3, -1}, -1},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			// 插入节点，进行测试
+			var got *Node[int]
+			if got = tt.Receiver.InsertBefore(tt.args.p, tt.args.e); !((got.data == tt.want) && (got.pre.next == got && got.next.pre == got) && (intList.size == 7)) {
+				t.Errorf("this.InsertBefore(%v, %v).data = %v, Receiver => %v, want %v", tt.args.p, tt.args.e, got.data, intList.String(), tt.want)
+			}
+			// 复原链表，保持每个测试用例环境一致性
+			intList.size--
+			got.pre.next = got.next
+			got.next.pre = got.pre
+		})
+	}
+}
+
+// 作为前驱插入
+func Test_InsertAfter(t *testing.T) {
+	type args[T num.Q] struct {
+		p *Node[T]
+		e T
+	}
+	type testCase[T num.Q] struct {
+		name     string               // 测试用例名
+		Receiver *DoublyLinkedList[T] // 接收对象
+		args     args[T]              // 多参数
+		want     T                    // 目标节点中的元素值
+	}
+	// int 类型测试，只插入一个节点
+	// 构造链表
+	intList := New[int]()
+	node0 := intList.trailer.InsertAsPre(0)
+	intList.trailer.InsertAsPre(1)
+	intList.trailer.InsertAsPre(2)
+	node3 := intList.trailer.InsertAsPre(3)
+	intList.trailer.InsertAsPre(4)
+	node5 := intList.trailer.InsertAsPre(5)
+	intList.size = 6
+	intTests := []testCase[int]{
+		{"int 首节点之后插入", intList, args[int]{node0, -1}, -1},
+		{"int 末节点之后插入", intList, args[int]{node5, -1}, -1},
+		{"int 中间随机插入", intList, args[int]{node3, -1}, -1},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			// 插入节点，进行测试
+			var got *Node[int]
+			if got = tt.Receiver.InsertAfter(tt.args.p, tt.args.e); !((got.data == tt.want) && (got.pre.next == got && got.next.pre == got) && (intList.size == 7)) {
+				t.Errorf("this.InsertAfter(%v, %v).data = %v, Receiver => %v, want %v", tt.args.p, tt.args.e, got.data, intList.String(), tt.want)
+			}
+			// 复原链表，保持每个测试用例环境一致性
+			intList.size--
+			got.pre.next = got.next
+			got.next.pre = got.pre
+		})
+	}
+}
+
+// 作为首节点插入
+func Test_InsertAsFirst(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string               // 测试用例名
+		Receiver *DoublyLinkedList[T] // 接收对象
+		arg      T                    // 多参数
+	}
+	// int 类型测试，只插入一个节点
+	// 构造链表
+	intList := New[int]()
+	intList.trailer.InsertAsPre(0)
+	intList.trailer.InsertAsPre(1)
+	intList.trailer.InsertAsPre(2)
+	intList.trailer.InsertAsPre(3)
+	intList.trailer.InsertAsPre(4)
+	intList.trailer.InsertAsPre(5)
+	intList.size = 6
+	intTests := []testCase[int]{
+		{"int 插入一个数", intList, 0},
+		{"int 插入另一个数", intList, -1},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			oldFirst := tt.Receiver.header.next // 记录旧首节点
+			// 插入节点，进行测试
+			if got := tt.Receiver.InsertAsFirst(tt.arg); !((got.data == tt.arg) && ((got.pre == tt.Receiver.header && tt.Receiver.header.next == got) && (got.next == oldFirst && oldFirst.pre == got)) && (intList.size == 7)) {
+				t.Errorf("this.InsertAsFirst(%v).data = %v, Receiver => %v, want %v", tt.arg, got.data, intList.String(), got.data)
+			}
+			// 复原链表，保持每个测试用例环境一致性
+			tt.Receiver.header.next = oldFirst
+			oldFirst.pre = tt.Receiver.header
+			intList.size--
+		})
+	}
+}
+
+// 作为末节点插入
+func Test_InsertAsLast(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string               // 测试用例名
+		Receiver *DoublyLinkedList[T] // 接收对象
+		arg      T                    // 多参数
+	}
+	// int 类型测试，只插入一个节点
+	// 构造链表
+	intList := New[int]()
+	intList.trailer.InsertAsPre(0)
+	intList.trailer.InsertAsPre(1)
+	intList.trailer.InsertAsPre(2)
+	intList.trailer.InsertAsPre(3)
+	intList.trailer.InsertAsPre(4)
+	intList.trailer.InsertAsPre(5)
+	intList.size = 6
+	intTests := []testCase[int]{
+		{"int 插入一个数", intList, 0},
+		{"int 插入另一个数", intList, -1},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			oldLast := tt.Receiver.trailer.pre // 记录旧首节点
+			// 插入节点，进行测试
+			if got := tt.Receiver.InsertAsLast(tt.arg); !((got.data == tt.arg) && ((got.pre == oldLast && oldLast.next == got) && (got.next == tt.Receiver.trailer && tt.Receiver.trailer.pre == got)) && (intList.size == 7)) {
+				t.Errorf("this.InsertAsLast(%v).data = %v, Receiver => %v, want %v", tt.arg, got.data, intList.String(), got.data)
+			}
+			// 复原链表，保持每个测试用例环境一致性
+			oldLast.next = tt.Receiver.trailer
+			tt.Receiver.trailer.pre = oldLast
+			intList.size--
+		})
+	}
+}
+
 // 向前查找
 func Test_FindBefore(t *testing.T) {
 	type args[T num.Q] struct {
