@@ -74,48 +74,42 @@ func Test_NewFromSlice(t *testing.T) {
 	}
 }
 
-// // 通过复制构造
-// func Test_NewFormList(t testing.T) {
-// 	type args[T num.Q] struct {
-// 		p *Node[T]
-// 		n int
-// 	}
-// 	type testCase[T num.Q] struct {
-// 		name     string               // 测试用例名
-// 		Receiver *DoublyLinkedList[T] // 接收对象
-// 		args     args[T]              // 多参数
-// 		want     T                    // 目标节点中的元素值
-// 	}
-// 	// int 类型测试，只插入一个节点
-// 	// 构造链表
-// 	intList := New[int]()
-// 	node0 := intList.trailer.InsertAsPre(0)
-// 	intList.trailer.InsertAsPre(1)
-// 	node2 := intList.trailer.InsertAsPre(2)
-// 	intList.trailer.InsertAsPre(3)
-// 	intList.trailer.InsertAsPre(4)
-// 	node5 := intList.trailer.InsertAsPre(5)
-// 	intList.size = 6
-// 	intTests := []testCase[int]{
-// 		{"int 全复制", intList, args[int]{node0, -1}, -1},
-// 		{"int 上界复制", intList, args[int]{node5, -1}, -1},
-// 		{"int 下界复制", intList, args[int]{node3, -1}, -1},
-// 		{"int 中间复制", intList, args[int]{node3, -1}, -1},
-// 	}
-// 	for _, tt := range intTests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			// 插入节点，进行测试
-// 			var got *Node[int]
-// 			if got = tt.Receiver.NewFormList(tt.args.p, tt.args.n); !((got.data == tt.want) && (got.pre.next == got && got.next.pre == got) && (intList.size == 7)) {
-// 				t.Errorf("this.NewFormList(%v, %v).data = %v, Receiver => %v, want %v", tt.args.p, tt.args.n, got.data, intList.String(), tt.want)
-// 			}
-// 			// 复原链表，保持每个测试用例环境一致性
-// 			intList.size--
-// 			got.pre.next = got.next
-// 			got.next.pre = got.pre
-// 		})
-// 	}
-// }
+// 通过复制构造
+func Test_NewFormList(t *testing.T) {
+	type args[T num.Q] struct {
+		p *Node[T]
+		n int
+	}
+	type testCase[T num.Q] struct {
+		name     string               // 测试用例名
+		Receiver *DoublyLinkedList[T] // 接收对象
+		args     args[T]              // 多参数
+		want     *DoublyLinkedList[T] // 目标节点中的元素值
+	}
+	// int 类型测试，只插入一个节点
+	// 构造链表
+	intList := New[int]()
+	node0 := intList.trailer.InsertAsPre(0)
+	intList.trailer.InsertAsPre(1)
+	node2 := intList.trailer.InsertAsPre(2)
+	node3 := intList.trailer.InsertAsPre(3)
+	intList.trailer.InsertAsPre(4)
+	intList.trailer.InsertAsPre(5)
+	intList.size = 6
+	intTests := []testCase[int]{
+		{"int 全复制", intList, args[int]{node0, 6}, NewFromSlice([]int{0, 1, 2, 3, 4, 5})},
+		{"int 上界复制", intList, args[int]{node3, 3}, NewFromSlice([]int{3, 4, 5})},
+		{"int 下界复制", intList, args[int]{node0, 3}, NewFromSlice([]int{0, 1, 2})},
+		{"int 中间复制", intList, args[int]{node2, 2}, NewFromSlice([]int{2, 3})},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewFormList(tt.args.p, tt.args.n); !got.DeepEqual(tt.want) {
+				t.Errorf("NewFormList(%v, %v) = %v, want %v", tt.args.p, tt.args.n, got, tt.want)
+			}
+		})
+	}
+}
 
 // 寻秩读取元素
 func Test_Get(t *testing.T) {
