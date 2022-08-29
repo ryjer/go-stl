@@ -35,14 +35,13 @@ func New[T num.Q]() *DoublyLinkedList[T] {
 	return Init[T]()
 }
 
-// 内部方法：获取首节点
-func (this *DoublyLinkedList[T]) firstNode() *Node[T] {
-	return this.header.next // 头哨兵的后继
-}
-
-// 内部方法：获取末节点
-func (this *DoublyLinkedList[T]) lastNode() *Node[T] {
-	return this.trailer.pre // 尾哨兵的前驱
+// 从切片构造
+func NewFromSlice[T num.Q](sourceSlice []T) *DoublyLinkedList[T] {
+	newList := Init[T]()            //初始化空链表
+	for _, v := range sourceSlice { // 逐个复制元素
+		newList.InsertAsLast(v)
+	}
+	return newList
 }
 
 // 从已有列表复制构造，从自节点p起（包含p）的n个节点复制到新列表中
@@ -54,6 +53,16 @@ func NewFormList[T num.Q](p *Node[T], n int) (newList *DoublyLinkedList[T]) {
 		n--                          // n计数器递减
 	}
 	return newList
+}
+
+// 内部方法：获取首节点
+func (this *DoublyLinkedList[T]) firstNode() *Node[T] {
+	return this.header.next // 头哨兵的后继
+}
+
+// 内部方法：获取末节点
+func (this *DoublyLinkedList[T]) lastNode() *Node[T] {
+	return this.trailer.pre // 尾哨兵的前驱
 }
 
 // // 清空列表
@@ -137,25 +146,25 @@ func (this *DoublyLinkedList[T]) FindAfter(e T, p *Node[T], n int) (targetNode *
 	return nil
 }
 
-// // 列表值判等，以值相等原则进行比较
-// // 定义：一个列表在值层次上的相等包括：容量、链表中的元素序列 相等
-// func (this *DoublyLinkedList[T]) DeepEqual(another *DoublyLinkedList[T]) (equal bool) {
-// 	if this.size != another.size { // 当容量不同时，不相等
-// 		return false
-// 	}
-// 	// 当容量相同时
-// 	if this.size == 0 && another.size == 0 { // 容量为0时，直接返回true
-// 		return true
-// 	}
-// 	// 容量不为0时，逐个比较元素值
-// 	for thisCurrent, anotherCurrent := this.header.next, another.header.next; (thisCurrent != this.trailer) || (anotherCurrent != another.trailer); thisCurrent, anotherCurrent = thisCurrent.next, anotherCurrent.next {
-// 		if thisCurrent.data != anotherCurrent.data { // 一旦发现一个节点中的元素不相等，则认定数据视图不同
-// 			return false
-// 		}
-// 	}
-// 	// 全部相等后，可以判定相等
-// 	return true
-// }
+// 值判等，以值相等原则进行比较
+// 定义：一个列表在"内容视图"上的相等包括：容量、链表的元素序列 相等，忽略其中的指针
+func (this *DoublyLinkedList[T]) DeepEqual(another *DoublyLinkedList[T]) (equal bool) {
+	if this.size != another.size { // 当容量不同时，不相等
+		return false
+	}
+	// 当容量相同时，且为0时。不用逐个比较元素
+	if this.size == 0 && another.size == 0 {
+		return true
+	}
+	// 容量不为0时，逐个比较元素值
+	for thisCurrent, anotherCurrent := this.header.next, another.header.next; (thisCurrent != this.trailer) || (anotherCurrent != another.trailer); thisCurrent, anotherCurrent = thisCurrent.next, anotherCurrent.next {
+		if thisCurrent.data != anotherCurrent.data { // 一旦发现一个节点中的元素不相等，则认定数据视图不同
+			return false
+		}
+	}
+	// 全部相等后，可以判定相等
+	return true
+}
 
 // 序列化函数
 func (this *DoublyLinkedList[T]) String() (retString string) {
