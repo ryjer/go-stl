@@ -141,6 +141,47 @@ func Test_Get(t *testing.T) {
 	}
 }
 
+// 移除指定节点
+func Test_Remove(t *testing.T) {
+	type want[T num.Q] struct {
+		Receiver *DoublyLinkedList[T] // 处理后的链表
+		ret      T                    // 返回值
+	}
+	type testCase[T num.Q] struct {
+		name     string               // 测试用例名
+		Receiver *DoublyLinkedList[T] // 接收对象
+		arg      *Node[T]             // 多参数
+		want     want[T]              // 返回值
+	}
+	// int 类型测试，只插入一个节点
+	// 构造链表
+	intList := New[int]()
+	node0 := intList.trailer.InsertAsPre(0)
+	intList.trailer.InsertAsPre(1)
+	node2 := intList.trailer.InsertAsPre(2)
+	intList.trailer.InsertAsPre(3)
+	intList.trailer.InsertAsPre(4)
+	node5 := intList.trailer.InsertAsPre(5)
+	intList.size = 6
+	intTests := []testCase[int]{
+		{"int 首节点移除", intList, node0, want[int]{NewFromSlice([]int{1, 2, 3, 4, 5}), 0}},
+		{"int 末节点移除", intList, node5, want[int]{NewFromSlice([]int{0, 1, 2, 3, 4}), 5}},
+		{"int 中间随机移除", intList, node2, want[int]{NewFromSlice([]int{0, 1, 3, 4, 5}), 2}},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			// 记录被删除节点的前一节点，以备之后复原
+			previousNode := tt.arg.pre
+			var got int
+			if got = tt.Receiver.Remove(tt.arg); !(tt.Receiver.DeepEqual(tt.want.Receiver) && got == tt.want.ret) {
+				t.Errorf("this.Remove(%v) = %v, Receiver => %v, want %v %v", tt.arg, got, tt.Receiver, tt.want.ret, tt.want.Receiver)
+			}
+			// 复原链表，保持每个测试用例环境一致性
+			tt.Receiver.InsertAfter(previousNode, got)
+		})
+	}
+}
+
 // 作为前驱插入
 func Test_InsertBefore(t *testing.T) {
 	type args[T num.Q] struct {

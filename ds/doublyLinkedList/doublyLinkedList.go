@@ -98,6 +98,15 @@ func (this *DoublyLinkedList[T]) Get(r int) (element T) {
 	return currentNode.data
 }
 
+// 移除节点
+func (this *DoublyLinkedList[T]) Remove(node *Node[T]) (element T) {
+	element = node.data
+	node.pre.next = node.next
+	node.next.pre = node.pre
+	this.size--
+	return element
+}
+
 // 插入前驱节点，将e作为p的前驱插入，返回新节点的地址
 func (this *DoublyLinkedList[T]) InsertBefore(p *Node[T], e T) *Node[T] {
 	newNode := p.InsertAsPre(e) // 插入新前驱 newNode
