@@ -65,27 +65,27 @@ func (this *List[T]) lastNode() *Node[T] {
 	return this.trailer.pre // 尾哨兵的前驱
 }
 
-// // 清空列表
-// func (this *List[T]) Clear() {
-// 	this.size = 0
-// 	this.header.next = this.trailer
-// 	this.trailer.pre = this.header
-// }
+// 清空链表
+func (this *List[T]) Clear() {
+	this.size = 0
+	this.header.next = this.trailer
+	this.trailer.pre = this.header
+}
 
-// // 容量
-// func (this *List[T]) Size() (size int) {
-// 	return this.size
-// }
+// 容量
+func (this *List[T]) Size() (size int) {
+	return this.size
+}
 
-// // 空判断
-// func (this *List[T]) IsEmpty() (isEmpty bool) {
-// 	if this.size == 0 {
-// 		isEmpty = true
-// 	} else {
-// 		isEmpty = false
-// 	}
-// 	return
-// }
+// 空判断
+func (this *List[T]) IsEmpty() (isEmpty bool) {
+	if this.size == 0 {
+		isEmpty = true
+	} else {
+		isEmpty = false
+	}
+	return
+}
 
 // 读取元素，寻秩访问
 func (this *List[T]) Get(r int) (element T) {

@@ -141,6 +141,68 @@ func Test_Get(t *testing.T) {
 	}
 }
 
+// 清空链表
+func Test_Clear(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *List[T]
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空链表清空", NewFromSlice([]int{})},
+		{"int 非空链表", NewFromSlice([]int{1, 2, 3, 4})},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Receiver.Clear(); !(tt.Receiver.size == 0 && tt.Receiver.header.next == tt.Receiver.trailer && tt.Receiver.trailer.pre == tt.Receiver.header) {
+				t.Errorf("Receiver.Clear(), Receiver => %v", tt.Receiver)
+			}
+		})
+	}
+}
+
+// 获取已用容量
+func Test_Size(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *List[T]
+		want     int
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空链表清空", NewFromSlice([]int{}), 0},
+		{"int 非空链表", NewFromSlice([]int{1, 2, 3, 4}), 4},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.Size(); !(got == tt.want) {
+				t.Errorf("Receiver.Size() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
+			}
+		})
+	}
+}
+
+// 获取已用容量
+func Test_IsEmpty(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *List[T]
+		want     bool
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空链表清空", NewFromSlice([]int{}), true},
+		{"int 非空链表", NewFromSlice([]int{1, 2, 3, 4}), false},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.IsEmpty(); !(got == tt.want) {
+				t.Errorf("Receiver.IsEmpty() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
+			}
+		})
+	}
+}
+
 // 移除指定节点
 func Test_Remove(t *testing.T) {
 	type want[T num.Q] struct {
