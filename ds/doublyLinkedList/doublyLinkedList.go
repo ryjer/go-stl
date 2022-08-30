@@ -98,6 +98,11 @@ func (this *List[T]) Get(r int) (element T) {
 	return currentNode.data
 }
 
+// 修改元素
+func (this *List[T]) Put(p *Node[T], e T) {
+	p.data = e
+}
+
 // 移除节点
 func (this *List[T]) Remove(node *Node[T]) (element T) {
 	element = node.data
@@ -125,10 +130,32 @@ func (this *List[T]) InsertAfter(p *Node[T], e T) *Node[T] {
 func (this *List[T]) InsertAsFirst(e T) *Node[T] {
 	return this.InsertAfter(this.header, e) // 在头哨兵之后插入
 }
+func (this *List[T]) PushFront(e T) *Node[T] { //与InsertAsFirst相同，只有名字不同
+	return this.InsertAfter(this.header, e) // 在头哨兵之后插入
+}
+
+// 弹出首节点
+// 警告：不会检查链表是否为空，调用方需自行检查保证
+func (this *List[T]) PopFront() (element T) {
+	element = this.firstNode().data
+	this.Remove(this.firstNode())
+	return element
+}
 
 // 作为末节点插入，将元素e作为整个列表的末节点插入
 func (this *List[T]) InsertAsLast(e T) *Node[T] {
 	return this.InsertBefore(this.trailer, e) // 在尾哨兵之前插入
+}
+func (this *List[T]) PushBack(e T) *Node[T] { // 与 InsertAsLast相同，只有名字不同
+	return this.InsertBefore(this.trailer, e) // 在尾哨兵之前插入
+}
+
+// 弹出末节点
+// 警告：不会检查链表是否为空，调用方需自行检查保证
+func (this *List[T]) PopBack() (element T) {
+	element = this.lastNode().data
+	this.Remove(this.lastNode())
+	return element
 }
 
 // 向前查找, 在节点p之前（不包括p本身）的n个节点中，从p向前查找元素e，返回第一个包含元素e的节点的地址
