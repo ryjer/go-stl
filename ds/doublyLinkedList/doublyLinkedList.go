@@ -162,7 +162,7 @@ func (this *List[T]) PopBack() (element T) {
 func (this *List[T]) FindBefore(e T, n int, p *Node[T]) (targetNode *Node[T]) {
 	for 0 < n {
 		p = p.pre
-		if e == p.data {
+		if p.data == e {
 			return p
 		}
 		n--
@@ -175,6 +175,19 @@ func (this *List[T]) FindAfter(e T, p *Node[T], n int) (targetNode *Node[T]) {
 	for 0 < n {
 		p = p.next
 		if e == p.data {
+			return p
+		}
+		n--
+	}
+	return nil
+}
+
+// 向前搜索，在节点p之前（不包括p）的n个节点中，向前逐个查找元素e，返回第一个不大于e的节点
+// 由于数据结构本身的限制，有序列表的搜索并不会比无序列表更好
+func (this *List[T]) SearchBefore(e T, n int, p *Node[T]) (targetNode *Node[T]) {
+	for 0 < n {
+		p = p.pre
+		if p.data <= e {
 			return p
 		}
 		n--

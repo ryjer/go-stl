@@ -457,14 +457,7 @@ func Test_FindBefore(t *testing.T) {
 	}
 	// int 类型测试
 	// 构造链表
-	intList := New[int]()
-	intList.trailer.InsertAsPre(0)
-	intList.trailer.InsertAsPre(1)
-	intList.trailer.InsertAsPre(2)
-	intList.trailer.InsertAsPre(3)
-	intList.trailer.InsertAsPre(4)
-	intList.trailer.InsertAsPre(5)
-	intList.size = 6
+	intList := NewFromSlice([]int{0, 1, 2, 3, 4, 5})
 	intTests := []testCase[int]{
 		{"int 全查找，循环下界", intList, args[int]{4, 5, intList.LastNode()}, 4},
 		{"int 全查找，中间随机", intList, args[int]{2, 5, intList.LastNode()}, 2},
@@ -515,6 +508,37 @@ func Test_FindAfter(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.Receiver.FindAfter(tt.args.e, tt.args.p, tt.args.n); got.data != tt.want {
 				t.Errorf("this.FindAfter(%v, %v, %v).data = %v, want %v", tt.args.e, tt.args.p, tt.args.n, got.data, tt.want)
+			}
+		})
+	}
+}
+
+// 向前搜索，有序链表元素搜索
+func Test_SearchBefore(t *testing.T) {
+	type args[T num.Q] struct {
+		e T
+		n int
+		p *Node[T]
+	}
+	type testCase[T num.Q] struct {
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		args     args[T]  // 多参数
+		want     T        // 目标节点中的元素值
+	}
+	// int 类型测试
+	intList := NewFromSlice([]int{0, 1, 2, 2, 4, 5})
+	intTests := []testCase[int]{
+		{"int 全查找，循环下界", intList, args[int]{4, 5, intList.LastNode()}, 4},
+		{"int 全查找，中间随机", intList, args[int]{2, 5, intList.LastNode()}, 2},
+		{"int 全查找，循环上界", intList, args[int]{0, 5, intList.LastNode()}, 0},
+		{"int 部分查找，模糊查找，", intList, args[int]{3, 3, intList.LastNode().pre}, 2},
+		{"int 部分查找，精确查找，", intList, args[int]{1, 3, intList.LastNode().pre}, 1},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.SearchBefore(tt.args.e, tt.args.n, tt.args.p); !(got.data == tt.want) {
+				t.Errorf("this.SearchBefore(%v, %v, %v).data = %v, want %v", tt.args.e, tt.args.n, tt.args.p.data, got.data, tt.want)
 			}
 		})
 	}
