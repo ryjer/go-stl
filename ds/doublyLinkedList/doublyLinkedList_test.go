@@ -10,8 +10,8 @@ import (
 func Test_DeepEqual(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string
-		Receiver *DoublyLinkedList[T]
-		arg      *DoublyLinkedList[T]
+		Receiver *List[T]
+		arg      *List[T]
 		want     bool
 	}
 	// int 类型测试
@@ -81,10 +81,10 @@ func Test_NewFormList(t *testing.T) {
 		n int
 	}
 	type testCase[T num.Q] struct {
-		name     string               // 测试用例名
-		Receiver *DoublyLinkedList[T] // 接收对象
-		args     args[T]              // 多参数
-		want     *DoublyLinkedList[T] // 目标节点中的元素值
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		args     args[T]  // 多参数
+		want     *List[T] // 目标节点中的元素值
 	}
 	// int 类型测试，只插入一个节点
 	// 构造链表
@@ -115,7 +115,7 @@ func Test_NewFormList(t *testing.T) {
 func Test_Get(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string
-		Receiver *DoublyLinkedList[T]
+		Receiver *List[T]
 		arg      int
 		want     T
 	}
@@ -144,14 +144,14 @@ func Test_Get(t *testing.T) {
 // 移除指定节点
 func Test_Remove(t *testing.T) {
 	type want[T num.Q] struct {
-		Receiver *DoublyLinkedList[T] // 处理后的链表
-		ret      T                    // 返回值
+		Receiver *List[T] // 处理后的链表
+		ret      T        // 返回值
 	}
 	type testCase[T num.Q] struct {
-		name     string               // 测试用例名
-		Receiver *DoublyLinkedList[T] // 接收对象
-		arg      *Node[T]             // 多参数
-		want     want[T]              // 返回值
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		arg      *Node[T] // 多参数
+		want     want[T]  // 返回值
 	}
 	// int 类型测试，只插入一个节点
 	// 构造链表
@@ -189,10 +189,10 @@ func Test_InsertBefore(t *testing.T) {
 		e T
 	}
 	type testCase[T num.Q] struct {
-		name     string               // 测试用例名
-		Receiver *DoublyLinkedList[T] // 接收对象
-		args     args[T]              // 多参数
-		want     T                    // 目标节点中的元素值
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		args     args[T]  // 多参数
+		want     T        // 目标节点中的元素值
 	}
 	// int 类型测试，只插入一个节点
 	// 构造链表
@@ -231,10 +231,10 @@ func Test_InsertAfter(t *testing.T) {
 		e T
 	}
 	type testCase[T num.Q] struct {
-		name     string               // 测试用例名
-		Receiver *DoublyLinkedList[T] // 接收对象
-		args     args[T]              // 多参数
-		want     T                    // 目标节点中的元素值
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		args     args[T]  // 多参数
+		want     T        // 目标节点中的元素值
 	}
 	// int 类型测试，只插入一个节点
 	// 构造链表
@@ -269,9 +269,9 @@ func Test_InsertAfter(t *testing.T) {
 // 作为首节点插入
 func Test_InsertAsFirst(t *testing.T) {
 	type testCase[T num.Q] struct {
-		name     string               // 测试用例名
-		Receiver *DoublyLinkedList[T] // 接收对象
-		arg      T                    // 多参数
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		arg      T        // 多参数
 	}
 	// int 类型测试，只插入一个节点
 	// 构造链表
@@ -305,9 +305,9 @@ func Test_InsertAsFirst(t *testing.T) {
 // 作为末节点插入
 func Test_InsertAsLast(t *testing.T) {
 	type testCase[T num.Q] struct {
-		name     string               // 测试用例名
-		Receiver *DoublyLinkedList[T] // 接收对象
-		arg      T                    // 多参数
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		arg      T        // 多参数
 	}
 	// int 类型测试，只插入一个节点
 	// 构造链表
@@ -346,10 +346,10 @@ func Test_FindBefore(t *testing.T) {
 		p *Node[T]
 	}
 	type testCase[T num.Q] struct {
-		name     string               // 测试用例名
-		Receiver *DoublyLinkedList[T] // 接收对象
-		args     args[T]              // 多参数
-		want     T                    // 目标节点中的元素值
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		args     args[T]  // 多参数
+		want     T        // 目标节点中的元素值
 	}
 	// int 类型测试
 	// 构造链表
@@ -385,10 +385,10 @@ func Test_FindAfter(t *testing.T) {
 		n int
 	}
 	type testCase[T num.Q] struct {
-		name     string               // 测试用例名
-		Receiver *DoublyLinkedList[T] // 接收对象
-		args     args[T]              // 多参数
-		want     T                    // 目标节点中的元素值
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		args     args[T]  // 多参数
+		want     T        // 目标节点中的元素值
 	}
 	// int 类型测试
 	// 构造链表
