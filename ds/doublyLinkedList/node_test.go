@@ -188,7 +188,7 @@ func Test_node_PreNode(t *testing.T) {
 	tailNode.pre = headNode
 	intTests := []testCase[int]{
 		{"int 简单链表测试", tailNode, headNode},
-		{"int 构造链表测试", FullNewNode[int](2, tailNode, nil), tailNode},
+		{"int 构造链表测试", FullNewNode(2, tailNode, nil), tailNode},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -214,7 +214,7 @@ func Test_node_NextNode(t *testing.T) {
 	tailNode.pre = headNode
 	intTests := []testCase[int]{
 		{"int 简单链表测试", headNode, tailNode},
-		{"int 构造链表测试", FullNewNode[int](2, nil, headNode), headNode},
+		{"int 构造链表测试", FullNewNode(2, nil, headNode), headNode},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -303,7 +303,7 @@ func Test_node_Remove(t *testing.T) {
 	headNode.next = tailNode // 将两个节点互相连接
 	tailNode.pre = headNode
 	intTests := []testCase[int]{
-		{"int 中间态移除", FullNewNode[int](2, headNode, tailNode), 2},
+		{"int 中间态移除", FullNewNode(2, headNode, tailNode), 2},
 		{"int 正常态移除", headNode.InsertAsNext(4), 4}, // 在 head节点后插入一个节点，形成  head(2) <-> new(4) <-> tail(8) 的结构
 	}
 	for _, tt := range intTests {

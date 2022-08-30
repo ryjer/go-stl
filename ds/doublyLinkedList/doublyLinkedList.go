@@ -252,6 +252,6 @@ func (this *List[T]) String() (retString string) {
 		retString += fmt.Sprintf("%v", p.data) // 打印最后一个元素值
 	}
 	// 补充尾部
-	retString += fmt.Sprint("]}")
+	retString += "]}"
 	return
 }

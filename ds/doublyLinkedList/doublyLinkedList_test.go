@@ -23,8 +23,8 @@ func Test_DeepEqual(t *testing.T) {
 	intList.trailer.InsertAsPre(3)
 	intList.size = 4
 	intTests := []testCase[int]{
-		{"int 空判等", New[int](), NewFromSlice[int]([]int{}), true},
-		{"int 非空判等", intList, NewFromSlice[int]([]int{0, 1, 2, 3}), true},
+		{"int 空判等", New[int](), NewFromSlice([]int{}), true},
+		{"int 非空判等", intList, NewFromSlice([]int{0, 1, 2, 3}), true},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
