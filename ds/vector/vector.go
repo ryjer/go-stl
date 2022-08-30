@@ -58,6 +58,13 @@ func NewFromVector[T num.Q](anotherVector *Vector[T], lo, hi int) *Vector[T] {
 	return &newVector
 }
 
+// 转换为一个新的切片返回
+func (this *Vector[T]) ToSlice() []T {
+	newSlice := make([]T, this.size)
+	copy(newSlice, this.data)
+	return newSlice
+}
+
 // copyFrom 向量区间复制方法：[lo,hi)区间
 func (this *Vector[T]) copyFrom(another *Vector[T], lo, hi int) {
 	newSize := hi - lo
@@ -316,6 +323,27 @@ func (this *Vector[T]) MergeSort(lo, hi int) {
 	this.MergeSort(lo, mi) // 排序前半部分 [lo, mi)
 	this.MergeSort(mi, hi) // 排序后半部分 [mi, hi)
 	this.merge(lo, mi, hi) // 将两个有序部分合并
+}
+
+// 值判等，以值相等原则进行比较
+// 定义：一个列表在"内容视图"上的相等包括：容量、链表的元素序列 相等，忽略其中的指针
+func (this *Vector[T]) DeepEqual(another *Vector[T]) (equal bool) {
+	// 已用容量不同，不相等
+	if this.size != another.size {
+		return false
+	}
+	// 当容量相同时，且为0时。不用逐个比较元素
+	if this.size == 0 && another.size == 0 {
+		return true
+	}
+	// 已用容量相同且不为0时，逐个元素比对
+	for i := 0; i < this.size; i++ {
+		if this.data[i] != another.data[i] {
+			return false
+		}
+	}
+	// 都相等，则判断
+	return true
 }
 
 // 序列化方法

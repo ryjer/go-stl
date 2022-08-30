@@ -1,6 +1,7 @@
 package vector
 
 import (
+	"reflect"
 	"strconv"
 	"testing"
 
@@ -106,6 +107,27 @@ func Test_NewFromVector(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewFromVector(tt.args.Vector, tt.args.lo, tt.args.hi); got.String() != tt.want {
 				t.Errorf("NewFromVector() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// 转换为切片
+func Test_ToSlice(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *Vector[T]
+		want     []T
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空向量", NewFromSlice([]int{}), []int{}},
+		{"int 非空向量", NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), []int{1, 2, 3, 4, 5, 6, 7, 8}},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.ToSlice(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Receiver.ToSlice() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -663,6 +685,41 @@ func Test_MergeSort(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.receiver.MergeSort(tt.args.lo, tt.args.hi); tt.receiver.String() != tt.want {
 				t.Errorf("this.MergeSort(%v, %v) => %v, want %v", tt.args.lo, tt.args.hi, tt.receiver.String(), tt.want)
+			}
+		})
+	}
+}
+
+// 内容判断
+func Test_DeepEqual(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string     // 测试用例名
+		Receiver *Vector[T] // 接收对象
+		arg      *Vector[T] // 单参数，秩
+		want     bool       // 预期结果
+	}
+	// int 类型测试
+	nilVector := &Vector[int]{
+		size:     0,
+		capacity: 0,
+		data:     []int{},
+	}
+	anotherVector := &Vector[int]{
+		size:     4,
+		capacity: defaultCapacity,
+		data:     []int{1, 2, 3, 4},
+	}
+	intTests := []testCase[int]{
+		{"int 空向量相等", NewFromSlice([]int{}), nilVector, true},
+		{"int 空向量不等", NewFromSlice([]int{}), anotherVector, false},
+		{"int 非空向量相等", NewFromSlice([]int{1, 2, 3, 4}), anotherVector, true},
+		{"int 非空向量长度不等", NewFromSlice([]int{1, 2, 3}), anotherVector, false},
+		{"int 非空向量元素不等", NewFromSlice([]int{1, 2, 3, 3}), anotherVector, false},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.DeepEqual(tt.arg); got != tt.want {
+				t.Errorf("this.DeepEqual(%v) = %v, want %v", tt.arg, got, tt.want)
 			}
 		})
 	}
