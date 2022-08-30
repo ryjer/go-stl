@@ -56,12 +56,12 @@ func NewFormList[T num.Q](p *Node[T], n int) (newList *List[T]) {
 }
 
 // 内部方法：获取首节点
-func (this *List[T]) firstNode() *Node[T] {
+func (this *List[T]) FirstNode() *Node[T] {
 	return this.header.next // 头哨兵的后继
 }
 
 // 内部方法：获取末节点
-func (this *List[T]) lastNode() *Node[T] {
+func (this *List[T]) LastNode() *Node[T] {
 	return this.trailer.pre // 尾哨兵的前驱
 }
 
@@ -90,7 +90,7 @@ func (this *List[T]) IsEmpty() (isEmpty bool) {
 // 读取元素，寻秩访问
 func (this *List[T]) Get(r int) (element T) {
 	// 初始化扫描器
-	currentNode := this.firstNode()
+	currentNode := this.FirstNode()
 	for 0 < r {
 		currentNode = currentNode.next
 		r--
@@ -137,8 +137,8 @@ func (this *List[T]) PushFront(e T) *Node[T] { //与InsertAsFirst相同，只有
 // 弹出首节点
 // 警告：不会检查链表是否为空，调用方需自行检查保证
 func (this *List[T]) PopFront() (element T) {
-	element = this.firstNode().data
-	this.Remove(this.firstNode())
+	element = this.FirstNode().data
+	this.Remove(this.FirstNode())
 	return element
 }
 
@@ -153,8 +153,8 @@ func (this *List[T]) PushBack(e T) *Node[T] { // 与 InsertAsLast相同，只有
 // 弹出末节点
 // 警告：不会检查链表是否为空，调用方需自行检查保证
 func (this *List[T]) PopBack() (element T) {
-	element = this.lastNode().data
-	this.Remove(this.lastNode())
+	element = this.LastNode().data
+	this.Remove(this.LastNode())
 	return element
 }
 
@@ -180,6 +180,43 @@ func (this *List[T]) FindAfter(e T, p *Node[T], n int) (targetNode *Node[T]) {
 		n--
 	}
 	return nil
+}
+
+// 唯一化，不要求列表元素有序
+func (this *List[T]) Deduplicate() (removedNumber int) {
+	if this.size < 2 { // 平凡链表(只有1个元素)，自然无重复
+		return 0
+	}
+	// 非平凡链表
+	oldSize := this.size                                                  //原规模
+	for p, r := this.FirstNode().next, 1; p != this.trailer; p = p.next { // 从第2个节点开始
+		// p为当前待比较节点，r为p节点之前待比较的节点数
+		if q := this.FindBefore(p.data, r, p); q != nil {
+			this.Remove(q) // 发现重复，删除前驱中的重复节点q，后方所有节点前移1位
+		} else {
+			r++ // 没有重复节点，待比较部分后移1位
+		}
+	}
+	return (oldSize - this.size)
+}
+
+// 有序列表唯一化
+func (this *List[T]) Uniquify() (removedNumber int) {
+	if this.size < 2 { // 平凡链表，自然无重复
+		return 0
+	}
+	// 非平凡链表
+	oldSize := this.size
+	for p, q := this.FirstNode(), this.FirstNode().next; this.trailer != q; {
+		// 反复考察邻近节点对 (p, q)，q定义位p的直接后继
+		if p.data != q.data {
+			p = q // 互异，p移动到新区段的起始
+		} else {
+			this.Remove(q) // 否则雷同，删除后者q
+		}
+		q = p.next
+	}
+	return (oldSize - this.size)
 }
 
 // 值判等，以值相等原则进行比较

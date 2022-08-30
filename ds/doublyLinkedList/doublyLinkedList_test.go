@@ -466,11 +466,11 @@ func Test_FindBefore(t *testing.T) {
 	intList.trailer.InsertAsPre(5)
 	intList.size = 6
 	intTests := []testCase[int]{
-		{"int 全查找，循环下界", intList, args[int]{4, 5, intList.lastNode()}, 4},
-		{"int 全查找，中间随机", intList, args[int]{2, 5, intList.lastNode()}, 2},
-		{"int 全查找，循环上界", intList, args[int]{0, 5, intList.lastNode()}, 0},
-		{"int 部分查找，循环下界，", intList, args[int]{3, 3, intList.lastNode().pre}, 3},
-		{"int 部分查找，循环上界，", intList, args[int]{1, 3, intList.lastNode().pre}, 1},
+		{"int 全查找，循环下界", intList, args[int]{4, 5, intList.LastNode()}, 4},
+		{"int 全查找，中间随机", intList, args[int]{2, 5, intList.LastNode()}, 2},
+		{"int 全查找，循环上界", intList, args[int]{0, 5, intList.LastNode()}, 0},
+		{"int 部分查找，循环下界，", intList, args[int]{3, 3, intList.LastNode().pre}, 3},
+		{"int 部分查找，循环上界，", intList, args[int]{1, 3, intList.LastNode().pre}, 1},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -505,16 +505,62 @@ func Test_FindAfter(t *testing.T) {
 	intList.trailer.InsertAsPre(5)
 	intList.size = 6
 	intTests := []testCase[int]{
-		{"int 全查找，循环下界", intList, args[int]{1, intList.firstNode(), 5}, 1},
-		{"int 全查找，中间随机", intList, args[int]{2, intList.firstNode(), 5}, 2},
-		{"int 全查找，循环上界", intList, args[int]{5, intList.firstNode(), 5}, 5},
-		{"int 部分查找，循环下界，", intList, args[int]{2, intList.firstNode().next, 3}, 2},
-		{"int 部分查找，循环上界，", intList, args[int]{4, intList.firstNode().next, 3}, 4},
+		{"int 全查找，循环下界", intList, args[int]{1, intList.FirstNode(), 5}, 1},
+		{"int 全查找，中间随机", intList, args[int]{2, intList.FirstNode(), 5}, 2},
+		{"int 全查找，循环上界", intList, args[int]{5, intList.FirstNode(), 5}, 5},
+		{"int 部分查找，循环下界，", intList, args[int]{2, intList.FirstNode().next, 3}, 2},
+		{"int 部分查找，循环上界，", intList, args[int]{4, intList.FirstNode().next, 3}, 4},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.Receiver.FindAfter(tt.args.e, tt.args.p, tt.args.n); got.data != tt.want {
 				t.Errorf("this.FindAfter(%v, %v, %v).data = %v, want %v", tt.args.e, tt.args.p, tt.args.n, got.data, tt.want)
+			}
+		})
+	}
+}
+
+// 无序列表去重
+func Test_Deduplicate(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *List[T] //原对象
+		newRecv  *List[T] //新对象
+		ret      int      //返回值
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空列表去重", NewFromSlice([]int{}), NewFromSlice([]int{}), 0},
+		{"int 平凡列表", NewFromSlice([]int{1}), NewFromSlice([]int{1}), 0},
+		{"int 非平凡列表", NewFromSlice([]int{4, 8, 6, 8, 2, 2, 9}), NewFromSlice([]int{4, 6, 8, 2, 9}), 2},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.Deduplicate(); !(tt.Receiver.DeepEqual(tt.newRecv) && got == tt.ret) {
+				t.Errorf("Receiver.Deduplicate() = %v, Recv => %v, ret %v", got, tt.Receiver, tt.ret)
+			}
+		})
+	}
+}
+
+// 有序列表去重
+func Test_Uniquify(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Recv     *List[T]
+		wantRecv *List[T]
+		wantRet  int
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空链表去重", NewFromSlice([]int{}), NewFromSlice([]int{}), 0},
+		{"int 平凡链表去重", NewFromSlice([]int{1}), NewFromSlice([]int{1}), 0},
+		{"int 非平凡链表", NewFromSlice([]int{3, 3, 3, 3, 5, 5, 5, 5, 5, 8, 8, 8, 13, 13, 13, 13}), NewFromSlice([]int{3, 5, 8, 13}), 12},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Recv.Uniquify(); !(tt.Recv.DeepEqual(tt.wantRecv) && got == tt.wantRet) {
+				t.Errorf("Recv.Uniquify() = %v, Recv => %v, want %v %v", got, tt.Recv, tt.wantRet, tt.wantRecv)
 			}
 		})
 	}
