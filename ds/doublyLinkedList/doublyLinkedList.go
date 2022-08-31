@@ -188,11 +188,11 @@ func (this *List[T]) SearchBefore(e T, n int, p *Node[T]) (targetNode *Node[T]) 
 	for 0 < n {
 		p = p.pre
 		if p.data <= e {
-			return p
+			break
 		}
 		n--
 	}
-	return nil
+	return p
 }
 
 // 唯一化，不要求列表元素有序
@@ -230,6 +230,44 @@ func (this *List[T]) Uniquify() (removedNumber int) {
 		q = p.next
 	}
 	return (oldSize - this.size)
+}
+
+// 选择排序，对链表中自p开始(包括p)的连续n个元素([p, p+n)区间)进行非降序排序
+func (this *List[T]) SelectionSort(p *Node[T], n int) {
+	head := p.pre
+	tail := p                // 待排序区间：(head,tail)，有序区间[tail,p+n)
+	for i := 0; i < n; i++ { // tail后移到 p+n 上界位置
+		tail = tail.next
+	}
+	for 1 < n { // 反复从（非平凡的）待排序区间内找出最大者，并移至有序区间前端
+		// 交换节点内容，减少碎片(这里data仅为基础类型，因而交换节点内容比交换节点更块)
+		maxNode := this.selectMaxAfter(head.next, n)
+		maxNode.data, tail.pre.data = tail.pre.data, maxNode.data
+		tail = tail.pre
+		n--
+	}
+}
+
+// 向后求最大内容节点，查找自p节点开始的n个节点（包括p）中元素最大的节点
+func (this *List[T]) selectMaxAfter(p *Node[T], n int) (maxNode *Node[T]) {
+	maxNode = p
+	for currentNode := p; 1 < n; n-- {
+		currentNode = currentNode.next
+		if currentNode.data >= maxNode.data {
+			maxNode = currentNode
+		}
+	}
+	return maxNode
+}
+
+// 插入排序，对链表中自p开始（包括p）的连续n个元素做插入排序
+func (this *List[T]) InsertionSort(p *Node[T], n int) {
+	for r := 0; r < n; r++ { // r为 有序前缀 节点数：有序部分 [header, header+r]；无序部分[]
+		beforeNode := this.SearchBefore(p.data, r, p) // 查找插入位点
+		this.InsertAfter(beforeNode, p.data)          // 插入节点
+		p = p.next
+		this.Remove(p.pre) // 未来优化：直接移动节点，尽量避免频繁的内存申请和释放。引入方法 (*Node).moveToAfter(p)
+	}
 }
 
 // 值判等，以值相等原则进行比较

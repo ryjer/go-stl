@@ -513,7 +513,7 @@ func Test_FindAfter(t *testing.T) {
 	}
 }
 
-// 向前搜索，有序链表元素搜索
+// 向前搜索
 func Test_SearchBefore(t *testing.T) {
 	type args[T num.Q] struct {
 		e T
@@ -539,6 +539,92 @@ func Test_SearchBefore(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.Receiver.SearchBefore(tt.args.e, tt.args.n, tt.args.p); !(got.data == tt.want) {
 				t.Errorf("this.SearchBefore(%v, %v, %v).data = %v, want %v", tt.args.e, tt.args.n, tt.args.p.data, got.data, tt.want)
+			}
+		})
+	}
+}
+
+// 选择排序
+func Test_SelectionSort(t *testing.T) {
+	type args[T num.Q] struct {
+		p *Node[T]
+		n int
+	}
+	type testCase[T num.Q] struct {
+		name     string   // 测试用例名
+		Recv     *List[T] // 接收对象
+		args     args[T]  // 多参数
+		wantRecv *List[T] // 目标节点中的元素值
+	}
+	// int 类型测试
+	intList0 := NewFromSlice([]int{3, 1, 2, 4, 6, 5, 7})
+	intList1 := NewFromSlice([]int{3, 1, 2, 4, 6, 5, 7})
+	intTests := []testCase[int]{
+		{"int 全排序", intList0, args[int]{intList0.FirstNode(), 7}, NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7})},
+		{"int 下界部分排序", intList1, args[int]{intList1.FirstNode(), 4}, NewFromSlice([]int{1, 2, 3, 4, 6, 5, 7})},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Recv.SelectionSort(tt.args.p, tt.args.n); !(tt.Recv.DeepEqual(tt.wantRecv)) {
+				t.Errorf("this.SelectionSort(%v, %v), Recv = %v, want %v", tt.args.p, tt.args.n, tt.Recv, tt.wantRecv)
+			}
+		})
+	}
+}
+
+// 向后查找最大元素节点
+func Test_selectMaxAfter(t *testing.T) {
+	type args[T num.Q] struct {
+		p *Node[T]
+		n int
+	}
+	type testCase[T num.Q] struct {
+		name     string   // 测试用例名
+		Receiver *List[T] // 接收对象
+		args     args[T]  // 多参数
+		want     T        // 目标节点中的元素值
+	}
+	// int 类型测试
+	intList := NewFromSlice([]int{3, 1, 2, 4, 6, 5, 7})
+	intTests := []testCase[int]{
+		{"int 全查找，循环上界", intList, args[int]{intList.FirstNode(), 7}, 7},
+		{"int 部分查找，循环上界", intList, args[int]{intList.FirstNode(), 5}, 6},
+		{"int 部分查找，中间查到", intList, args[int]{intList.FirstNode(), 6}, 6},
+		{"int 部分查找，循环下界", intList, args[int]{intList.FirstNode(), 3}, 3},
+		{"int 最小查找", intList, args[int]{intList.FirstNode(), 1}, 3},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.selectMaxAfter(tt.args.p, tt.args.n); !(got.data == tt.want) {
+				t.Errorf("this.selectMaxAfter(%v, %v) = %v, want %v", tt.args.p, tt.args.n, got, tt.want)
+			}
+		})
+	}
+}
+
+// 插入排序
+func Test_InsertionSort(t *testing.T) {
+	type args[T num.Q] struct {
+		p *Node[T]
+		n int
+	}
+	type testCase[T num.Q] struct {
+		name     string   // 测试用例名
+		Recv     *List[T] // 接收对象
+		args     args[T]  // 多参数
+		wantRecv *List[T] // 目标节点中的元素值
+	}
+	// int 类型测试
+	intList0 := NewFromSlice([]int{3, 1, 2, 4, 6, 5, 7})
+	intList1 := NewFromSlice([]int{3, 1, 2, 4, 6, 5, 7})
+	intTests := []testCase[int]{
+		{"int 全排序", intList0, args[int]{intList0.FirstNode(), 7}, NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7})},
+		{"int 下界部分排序", intList1, args[int]{intList1.FirstNode(), 4}, NewFromSlice([]int{1, 2, 3, 4, 6, 5, 7})},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Recv.InsertionSort(tt.args.p, tt.args.n); !(tt.Recv.DeepEqual(tt.wantRecv)) {
+				t.Errorf("this.InsertionSort(%v, %v), Recv = %v, want %v", tt.args.p, tt.args.n, tt.Recv, tt.wantRecv)
 			}
 		})
 	}
