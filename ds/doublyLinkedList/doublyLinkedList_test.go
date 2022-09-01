@@ -1,6 +1,7 @@
 package doublyLinkedlist
 
 import (
+	"reflect"
 	"testing"
 
 	num "gitee.com/ryjer/go-generic/number"
@@ -106,6 +107,27 @@ func Test_NewFormList(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewFormList(tt.args.p, tt.args.n); !got.DeepEqual(tt.want) {
 				t.Errorf("NewFormList(%v, %v) = %v, want %v", tt.args.p, tt.args.n, got, tt.want)
+			}
+		})
+	}
+}
+
+// 转换为一个新的切片返回
+func Test_ToSlice(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *List[T]
+		want     []T
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空列表转换", NewFromSlice([]int{}), []int{}},
+		{"int 非空列表转换", NewFromSlice([]int{1, 2, 3, 4}), []int{1, 2, 3, 4}},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.ToSlice(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Receiver.ToSlice() = %v, want %v", got, tt.want)
 			}
 		})
 	}

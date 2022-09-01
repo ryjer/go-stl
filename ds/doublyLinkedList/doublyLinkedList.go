@@ -55,6 +55,19 @@ func NewFormList[T num.Q](p *Node[T], n int) (newList *List[T]) {
 	return newList
 }
 
+// 转换为一个新的切片返回
+func (this *List[T]) ToSlice() (newSlice []T) {
+	newSlice = make([]T, this.size) // 构造新切片
+	// 逐个填入数据
+	for i, currentNode := 0, this.FirstNode(); i < len(newSlice) && currentNode != this.trailer; {
+		newSlice[i] = currentNode.data
+		// 后移索引
+		i++
+		currentNode = currentNode.next
+	}
+	return newSlice
+}
+
 // 内部方法：获取首节点
 func (this *List[T]) FirstNode() *Node[T] {
 	return this.header.next // 头哨兵的后继
