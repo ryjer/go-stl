@@ -162,14 +162,15 @@ func Test_shrink(t *testing.T) {
 	// int 类型测试
 	intTests := []testCase[int]{
 		{"int 空栈不缩容", New[int](), &Stack[int]{0, defaultCapacity, []int{}}},
-		{"int 空栈缩容", &Stack[int]{0, defaultCapacity * 4, make([]int, defaultCapacity*4)}, &Stack[int]{0, defaultCapacity * 2, []int{}}},
-		{"int 满栈不缩容", &Stack[int]{defaultCapacity, defaultCapacity, make([]int, defaultCapacity)}, &Stack[int]{defaultCapacity, defaultCapacity, make([]int, defaultCapacity)}},
-		{"int 少于一半缩容", &Stack[int]{defaultCapacity, defaultCapacity * 2, make([]int, defaultCapacity*2)}, &Stack[int]{defaultCapacity, defaultCapacity, make([]int, defaultCapacity*2)}},
+		{"int 空栈缩容", &Stack[int]{0, defaultCapacity * 2, make([]int, defaultCapacity*2)}, &Stack[int]{0, defaultCapacity, []int{}}},
+		{"int 大于一半不缩容", &Stack[int]{defaultCapacity + 1, defaultCapacity * 2, make([]int, defaultCapacity*2)}, &Stack[int]{defaultCapacity + 1, defaultCapacity * 2, make([]int, defaultCapacity*2)}},
+		{"int 等于一半缩容", &Stack[int]{defaultCapacity, defaultCapacity * 2, make([]int, defaultCapacity*2)}, &Stack[int]{defaultCapacity, defaultCapacity * 2, make([]int, defaultCapacity*2)}},
+		{"int 少于一半缩容", &Stack[int]{defaultCapacity - 1, defaultCapacity * 2, make([]int, defaultCapacity*2)}, &Stack[int]{defaultCapacity - 1, defaultCapacity * 2, make([]int, defaultCapacity*2)}},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
 			oldCap := tt.Recv.capacity
-			if tt.Recv.shrink(); !tt.Recv.DeepEqual(tt.wantRecv) {
+			if tt.Recv.shrink(); !!tt.Recv.DeepEqual(tt.wantRecv) {
 				t.Errorf("this.shrink(), oldCap=%v, newRecv=%v,  wantRecv %v", oldCap, tt.Recv, tt.wantRecv)
 			}
 		})
