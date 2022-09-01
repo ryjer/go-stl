@@ -198,7 +198,7 @@ func (this *List[T]) FindAfter(e T, p *Node[T], n int) (targetNode *Node[T]) {
 // 向前搜索，在节点p之前（不包括p）的n个节点中，向前逐个查找元素e，返回第一个不大于e的节点
 // 由于数据结构本身的限制，有序列表的搜索并不会比无序列表更好
 func (this *List[T]) SearchBefore(e T, n int, p *Node[T]) (targetNode *Node[T]) {
-	for 0 < n {
+	for 0 <= n {
 		p = p.pre
 		if p.data <= e {
 			break
@@ -277,9 +277,8 @@ func (this *List[T]) selectMaxAfter(p *Node[T], n int) (maxNode *Node[T]) {
 func (this *List[T]) InsertionSort(p *Node[T], n int) {
 	for r := 0; r < n; r++ { // r为 有序前缀 节点数：有序部分 [header, header+r]；无序部分[]
 		beforeNode := this.SearchBefore(p.data, r, p) // 查找插入位点
-		this.InsertAfter(beforeNode, p.data)          // 插入节点
-		p = p.next
-		this.Remove(p.pre) // 未来优化：直接移动节点，尽量避免频繁的内存申请和释放。引入方法 (*Node).moveToAfter(p)
+		p = p.next                                    //待比较节点指针后移
+		(p.pre).MoveToAfter(beforeNode)               //将原待比较节点插入有序区间对应位置
 	}
 }
 

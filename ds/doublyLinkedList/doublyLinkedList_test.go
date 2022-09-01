@@ -556,7 +556,7 @@ func Test_SearchBefore(t *testing.T) {
 		{"int 全查找，循环上界", intList, args[int]{-1, 5, intList.LastNode()}, -1},
 		{"int 部分查找，模糊查找，", intList, args[int]{3, 3, intList.LastNode().pre}, 2},
 		{"int 部分查找，模糊查找，", intList, args[int]{3, 3, intList.LastNode().pre}, 2},
-		{"int 部分查找，上界模糊查找，", intList, args[int]{-1, 0, intList.FirstNode()}, -1},
+		{"int 0长查找", intList, args[int]{-1, 0, intList.FirstNode()}, 0}, // 0长查找，会直接返回锚点节点p的前一节点
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
