@@ -72,7 +72,6 @@ func (this *Node[T]) MoveToAfter(targetNode *Node[T]) (xnode *Node[T]) {
 	this.pre.next = this.next // 从链表上摘除本节点
 	this.next.pre = this.pre
 	return targetNode.InsertNodeAsNext(this) // 插入本节点到目标节点的后面
-
 }
 
 // 元素前插入算法，作为当前节点的直接前驱插入，返回插入节点的地址
@@ -126,7 +125,7 @@ func (this *Node[T]) Remove() (element T) {
 
 // 居中判断，本节点位于链表上的 p, q节点之间
 func (this *Node[T]) IsBetween(p, q *Node[T]) bool {
-	// p <-> this <-> q
+	// p <-> this <-> q 相对位置关系判断
 	if (p.next == this && this.pre == p) && (this.next == q && q.pre == this) {
 		return true
 	} else {
