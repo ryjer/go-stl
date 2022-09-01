@@ -225,6 +225,46 @@ func Test_node_NextNode(t *testing.T) {
 	}
 }
 
+// 节点移动
+// func Test_node_MoveToAfter(t *testing.T) {
+// 	type testCase[T num.Q] struct {
+// 		name string
+// 		Recv *Node[T]
+// 		arg  *Node[T]
+// 		want *Node[T]
+// 	}
+// 	// int 类型测试
+// 	// 构造一个简单的 双向链表
+// 	headNode := NewNode(-1)
+// 	tailNode := NewNode(-1)
+// 	headNode.next = tailNode // 将两个节点互相连接
+// 	tailNode.pre = headNode
+// 	Node1 := tailNode.InsertAsPre(1)
+// 	Node2 := tailNode.InsertAsPre(2)
+// 	Node3 := tailNode.InsertAsPre(3)
+// 	Node4 := tailNode.InsertAsPre(4)
+// 	Node5 := tailNode.InsertAsPre(5)
+// 	intTests := []testCase[int]{
+// 		// 只移动 Node3
+// 		{"int 原位移动", Node3, Node3, Node4},
+// 		{"int 移动为前驱", Node3, Node2, Node3},
+// 		{"int 更前方移动", Node3, Node1, Node2},
+// 		{"int 更后方移动", Node3, Node4, Node5},
+// 	}
+// 	for _, tt := range intTests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			oldPre := tt.Recv.pre
+// 			oldNext := tt.Recv.next
+// 			newPre := tt.arg
+// 			newNext := tt.arg.next
+// 			got := tt.Recv.MoveToAfter(tt.arg)
+// 			if !((oldPre.next == oldNext && oldNext.pre == oldPre)&&()) {
+// 				t.Errorf("Recv.MoveToAfter(%v) = %v, want %v", tt.arg, got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
+
 // 元素作为前驱插入
 func Test_node_InsertAsPre(t *testing.T) {
 	type testCase[T num.Q] struct {
@@ -243,16 +283,16 @@ func Test_node_InsertAsPre(t *testing.T) {
 		{"int 插入测试", tailNode, 1, &Node[int]{1, headNode, tailNode}}, // 在 head <-> tail 中插入一个节点，变为 head(0) <-> new(1) <-> tail(8)
 		{"int 无前驱哨兵", headNode, -2, &Node[int]{-2, nil, headNode}},   // 在 head 前插入一个节点，变为 new(-2) <-> head(0) <-> (1) <->tail(8)
 	}
-	// 有前驱插入
+	// 有前驱插入，变为 head(0) <-> new(1) <-> tail(8)
 	t.Run(intTests[0].name, func(t *testing.T) {
-		if got := intTests[0].Receiver.InsertAsPre(intTests[0].arg); !((headNode.next == got && tailNode.pre == got) && got.DeepEqual(intTests[0].want)) {
+		if got := intTests[0].Receiver.InsertAsPre(intTests[0].arg); !(got.IsBetween(headNode, tailNode) && got.DeepEqual(intTests[0].want)) {
 			t.Errorf("this.InsertAsPre() = %v, Receiver => %v, want %v", got, intTests[0].Receiver, intTests[0].want)
 		}
 	})
 	// 提示，此时链表已变为 head(0) <-> (1) <-> tail(8)
 	// 无前驱插入
 	t.Run(intTests[1].name, func(t *testing.T) {
-		if got := intTests[1].Receiver.InsertAsPre(intTests[1].arg); !(headNode.pre == got && got.DeepEqual(intTests[1].want)) {
+		if got := intTests[1].Receiver.InsertAsPre(intTests[1].arg); !(IsAdjoin(got, headNode) && got.DeepEqual(intTests[1].want)) {
 			t.Errorf("this.InsertAsPre() = %v, Receiver => %v, want %v", got, intTests[1].Receiver, intTests[1].want)
 		}
 	})
@@ -276,15 +316,15 @@ func Test_node_InsertAsNext(t *testing.T) {
 		{"int 插入测试", headNode, 1, &Node[int]{1, headNode, tailNode}}, // 在 head <-> tail 中插入一个节点，变为： head(0) <-> new(1) <-> tail(8)
 		{"int 无后继哨兵", tailNode, 16, &Node[int]{16, tailNode, nil}},   //  在 tail 后入一个节点，变为： head(0) <-> (1) <-> tail(8) <-> new(16)
 	}
-	// 有后继哨兵插入
+	// 有后继哨兵插入：变为 head(0) <-> new(1) <-> tail(8)
 	t.Run(intTests[0].name, func(t *testing.T) {
-		if got := intTests[0].Receiver.InsertAsNext(intTests[0].arg); !((headNode.next == got && tailNode.pre == got) && got.DeepEqual(intTests[0].want)) {
+		if got := intTests[0].Receiver.InsertAsNext(intTests[0].arg); !(got.IsBetween(headNode, tailNode) && got.DeepEqual(intTests[0].want)) {
 			t.Errorf("this.InsertAsNext() = %v, Receiver => %v, want %v", got, intTests[0].Receiver, intTests[0].want)
 		}
 	})
-	// 无后继哨兵插入
+	// 无后继哨兵插入， 变为 head(0) <-> (1) <-> tail(8) <-> new(16)
 	t.Run(intTests[1].name, func(t *testing.T) {
-		if got := intTests[1].Receiver.InsertAsNext(intTests[1].arg); !(tailNode.next == got && got.DeepEqual(intTests[1].want)) {
+		if got := intTests[1].Receiver.InsertAsNext(intTests[1].arg); !(IsAdjoin(tailNode, got) && got.DeepEqual(intTests[1].want)) {
 			t.Errorf("this.InsertAsNext() = %v, Receiver => %v, want %v", got, intTests[1].Receiver, intTests[1].want)
 		}
 	})
@@ -361,7 +401,7 @@ func Test_node_Remove(t *testing.T) {
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.Receiver.Remove(); !(headNode.next == tailNode && tailNode.pre == headNode) {
+			if got := tt.Receiver.Remove(); !IsAdjoin(headNode, tailNode) {
 				t.Errorf("this.Remove() = %v, want %v", got, tt.want)
 			}
 		})
