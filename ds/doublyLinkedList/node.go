@@ -60,7 +60,22 @@ func (this *Node[T]) NextNode() *Node[T] {
 	return this.next
 }
 
-// 前插入算法，作为当前节点的直接前驱插入，返回插入节点的地址
+// 节点移动，将本节点移动到节点p后方，返回移动后本节点的后继节点
+func (this *Node[T]) MoveToAfter(targetNode *Node[T]) (xnode *Node[T]) {
+	xnode = this.pre
+	// 当目标位置为原位或者是前驱时，不会改变内容视图，直接返回
+	if targetNode == this || targetNode == this.pre {
+		return
+	}
+	// 其它情况下，可以通过先摘除后插入的方式实现
+	// 提示：假定目标链表存在头尾哨兵，且本节点不是哨兵节点
+	this.pre.next = this.next // 从链表上摘除本节点
+	this.next.pre = this.pre
+	return targetNode.InsertNodeAsNext(this) // 插入本节点到目标节点的后面
+
+}
+
+// 元素前插入算法，作为当前节点的直接前驱插入，返回插入节点的地址
 // 提示：可以在链表的头部插入，即使头部没有前驱节点
 func (this *Node[T]) InsertAsPre(e T) (xnode *Node[T]) {
 	xnode = FullNewNode(e, this.pre, this)
@@ -71,7 +86,7 @@ func (this *Node[T]) InsertAsPre(e T) (xnode *Node[T]) {
 	return xnode
 }
 
-// 后插入算法，作为当前节点的直接后继插入，返回插入节点的地址
+// 元素后插入算法，作为当前节点的直接后继插入，返回插入节点的地址
 func (this *Node[T]) InsertAsNext(e T) (xnode *Node[T]) {
 	xnode = FullNewNode(e, this, this.next)
 	if this.next != nil { // 当后继哨兵存在时
@@ -81,12 +96,50 @@ func (this *Node[T]) InsertAsNext(e T) (xnode *Node[T]) {
 	return xnode
 }
 
+// 节点前插入算法，将节点p作为当前节点的直接后继插入，返回插入后的前驱节点
+func (this *Node[T]) InsertNodeAsPre(p *Node[T]) (xnode *Node[T]) {
+	p.next = this
+	p.pre = this.pre // 将节点p半连接到链表上
+	p.pre.next = p
+	p.next.pre = p // 调整被半连接的本节点和后继节点的指针
+	return p.pre
+}
+
+// 节点后插入算法，将节点p作为当前节点的直接后继插入，返回插入后的后继节点
+func (this *Node[T]) InsertNodeAsNext(p *Node[T]) (xnode *Node[T]) {
+	p.pre = this
+	p.next = this.next // 将节点p半连接到链表上
+	p.pre.next = p
+	p.next.pre = p // 调整被半连接的本节点和后继节点的指针
+	return p.next
+}
+
 // 移除节点，返回被移除节点内的元素值
 func (this *Node[T]) Remove() (element T) {
 	element = this.data
-	pre := this.pre
-	next := this.next
-	pre.next = next
-	next.pre = pre
+	preNode := this.pre
+	nextNode := this.next
+	preNode.next = nextNode
+	nextNode.pre = preNode
 	return
+}
+
+// 居中判断，本节点位于链表上的 p, q节点之间
+func (this *Node[T]) IsBetween(p, q *Node[T]) bool {
+	// p <-> this <-> q
+	if (p.next == this && this.pre == p) && (this.next == q && q.pre == this) {
+		return true
+	} else {
+		return false
+	}
+}
+
+// 邻近判断，p, q节点紧邻且p是q的直接前驱
+func IsAdjoin[T num.Q](p, q *Node[T]) bool {
+	// p <-> q 判断
+	if p.next == q && q.pre == p {
+		return true
+	} else {
+		return false
+	}
 }

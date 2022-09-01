@@ -7,7 +7,7 @@ import (
 )
 
 // 值判等
-func Test_node_deepEquals(t *testing.T) {
+func Test_node_DeepEquals(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string   // 测试用例名称
 		Receiver *Node[T] // 接收对象
@@ -225,7 +225,7 @@ func Test_node_NextNode(t *testing.T) {
 	}
 }
 
-// 作为前驱节点插入
+// 元素作为前驱插入
 func Test_node_InsertAsPre(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string
@@ -258,7 +258,7 @@ func Test_node_InsertAsPre(t *testing.T) {
 	})
 }
 
-// 作为后继节点插入
+// 元素作为后继插入
 func Test_node_InsertAsNext(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string
@@ -290,6 +290,59 @@ func Test_node_InsertAsNext(t *testing.T) {
 	})
 }
 
+// 节点作为前驱插入
+func Test_node_InsertNodeAsPre(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *Node[T]
+		arg      *Node[T]
+		want     *Node[T]
+	}
+	// int 类型测试
+	// 构造一个简单的 双向链表
+	headNode := NewNode(1)
+	tailNode := NewNode(3)
+	headNode.next = tailNode // 将两个节点互相连接
+	tailNode.pre = headNode
+	midNode := tailNode.InsertAsPre(2)
+	intTests := []testCase[int]{
+		{"int 作为前节点插入", midNode, &Node[int]{-1, nil, nil}, headNode},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.InsertNodeAsPre(tt.arg); !tt.arg.IsBetween(got, tt.Receiver) {
+				t.Errorf("Receiver.InsertNodeAsPre(%v) = %v, want %v", tt.arg, got, tt.want)
+			}
+		})
+	}
+}
+
+// 节点作为后继插入
+func Test_node_InsertNodeAsNext(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *Node[T]
+		arg      *Node[T]
+		want     *Node[T]
+	}
+	// int 类型测试
+	// 构造一个简单的 双向链表
+	headNode := NewNode(1)
+	tailNode := NewNode(3)
+	headNode.next = tailNode // 将两个节点互相连接
+	tailNode.pre = headNode
+	midNode := tailNode.InsertAsPre(2)
+	intTests := []testCase[int]{
+		{"int 作为后节点插入", midNode, &Node[int]{-1, nil, nil}, headNode},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.InsertNodeAsNext(tt.arg); !tt.arg.IsBetween(tt.Receiver, got) {
+				t.Errorf("Receiver.InsertNodeAsNext(%v) = %v, want %v", tt.arg, got, tt.want)
+			}
+		})
+	}
+}
 func Test_node_Remove(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string
