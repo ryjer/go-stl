@@ -527,13 +527,14 @@ func Test_SearchBefore(t *testing.T) {
 		want     T        // 目标节点中的元素值
 	}
 	// int 类型测试
-	intList := NewFromSlice([]int{0, 1, 2, 2, 4, 5})
+	intList := NewFromSlice([]int{-1, 1, 2, 2, 4, 5})
 	intTests := []testCase[int]{
 		{"int 全查找，循环下界", intList, args[int]{4, 5, intList.LastNode()}, 4},
 		{"int 全查找，中间随机", intList, args[int]{2, 5, intList.LastNode()}, 2},
-		{"int 全查找，循环上界", intList, args[int]{0, 5, intList.LastNode()}, 0},
+		{"int 全查找，循环上界", intList, args[int]{-1, 5, intList.LastNode()}, -1},
 		{"int 部分查找，模糊查找，", intList, args[int]{3, 3, intList.LastNode().pre}, 2},
-		{"int 部分查找，精确查找，", intList, args[int]{1, 3, intList.LastNode().pre}, 1},
+		{"int 部分查找，模糊查找，", intList, args[int]{3, 3, intList.LastNode().pre}, 2},
+		{"int 部分查找，上界模糊查找，", intList, args[int]{-1, 0, intList.FirstNode()}, -1},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
