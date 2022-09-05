@@ -150,9 +150,7 @@ func (this *List[T]) PushFront(e T) *Node[T] { //与InsertAsFirst相同，只有
 // 弹出首节点
 // 警告：不会检查链表是否为空，调用方需自行检查保证
 func (this *List[T]) PopFront() (element T) {
-	element = this.FirstNode().data
-	this.Remove(this.FirstNode())
-	return element
+	return this.Remove(this.FirstNode())
 }
 
 // 作为末节点插入，将元素e作为整个列表的末节点插入
