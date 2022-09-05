@@ -164,9 +164,7 @@ func (this *List[T]) PushBack(e T) *Node[T] { // 与 InsertAsLast相同，只有
 // 弹出末节点
 // 警告：不会检查链表是否为空，调用方需自行检查保证
 func (this *List[T]) PopBack() (element T) {
-	element = this.LastNode().data
-	this.Remove(this.LastNode())
-	return element
+	return this.Remove(this.LastNode())
 }
 
 // 向前查找, 在节点p之前（不包括p本身）的n个节点中，从p向前查找元素e，返回第一个包含元素e的节点的地址
