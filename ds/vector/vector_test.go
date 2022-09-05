@@ -95,13 +95,13 @@ func Test_NewFromVector(t *testing.T) {
 	}
 	// int 类型测试
 	intTests := []testCase[int]{
-		{"int 对空向量", args[int]{NewFromSlice[int]([]int{}), 0, 0}, "{0 " + strconv.Itoa(defaultCapacity) + " []}"},
-		{"int 0区间", args[int]{NewFromSlice[int]([]int{1, 2, 3, 4, 5, 6, 7, 8}), 1, 1}, "{0 " + strconv.Itoa(defaultCapacity) + " []}"},
-		{"int 负区间", args[int]{NewFromSlice[int]([]int{1, 2, 3, 4, 5, 6, 7, 8}), 0, 0}, "{0 " + strconv.Itoa(defaultCapacity) + " []}"},
-		{"int 完全区间", args[int]{NewFromSlice[int]([]int{1, 2, 3, 4, 5, 6, 7, 8}), 0, 8}, "{8 " + strconv.Itoa(defaultCapacity*2) + " [1 2 3 4 5 6 7 8]}"},
-		{"int 下边界", args[int]{NewFromSlice[int]([]int{1, 2, 3, 4, 5, 6, 7, 8}), 0, 4}, "{4 " + strconv.Itoa(defaultCapacity) + " [1 2 3 4]}"},
-		{"int 上边界", args[int]{NewFromSlice[int]([]int{1, 2, 3, 4, 5, 6, 7, 8}), 4, 8}, "{4 " + strconv.Itoa(defaultCapacity) + " [5 6 7 8]}"},
-		{"int 中间随机", args[int]{NewFromSlice[int]([]int{1, 2, 3, 4, 5, 6, 7, 8}), 2, 6}, "{4 " + strconv.Itoa(defaultCapacity) + " [3 4 5 6]}"},
+		{"int 对空向量", args[int]{NewFromSlice([]int{}), 0, 0}, "{0 " + strconv.Itoa(defaultCapacity) + " []}"},
+		{"int 0区间", args[int]{NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), 1, 1}, "{0 " + strconv.Itoa(defaultCapacity) + " []}"},
+		{"int 负区间", args[int]{NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), 0, 0}, "{0 " + strconv.Itoa(defaultCapacity) + " []}"},
+		{"int 完全区间", args[int]{NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), 0, 8}, "{8 " + strconv.Itoa(defaultCapacity*2) + " [1 2 3 4 5 6 7 8]}"},
+		{"int 下边界", args[int]{NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), 0, 4}, "{4 " + strconv.Itoa(defaultCapacity) + " [1 2 3 4]}"},
+		{"int 上边界", args[int]{NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), 4, 8}, "{4 " + strconv.Itoa(defaultCapacity) + " [5 6 7 8]}"},
+		{"int 中间随机", args[int]{NewFromSlice([]int{1, 2, 3, 4, 5, 6, 7, 8}), 2, 6}, "{4 " + strconv.Itoa(defaultCapacity) + " [3 4 5 6]}"},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
