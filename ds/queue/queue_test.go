@@ -78,6 +78,27 @@ func Test_Enqueue(t *testing.T) {
 	}
 }
 
+// 弹出首节点
+func Test_Dequeue(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string    // 测试用例名
+		Receiver *Queue[T] // 接收对象
+		want     T
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 下界弹出", NewFromSlice([]int{4}), 4},
+		{"int 随机长度弹出", NewFromSlice([]int{1, 2, 3, 4}), 1},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.Dequeue(); !(got == tt.want) {
+				t.Errorf("this.Dequeue() = %v, Receiver => %v, want %v", got, tt.Receiver, tt.want)
+			}
+		})
+	}
+}
+
 // 从切片构造
 func Test_NewFromSlice(t *testing.T) {
 	type testCase[T num.Q] struct {
