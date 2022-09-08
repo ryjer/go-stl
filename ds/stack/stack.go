@@ -8,6 +8,7 @@ import (
 
 const defaultCapacity = 4 // 最小容量
 
+// 使用 go 切片实现栈
 type Stack[T num.Q] struct {
 	size     int // 已用容量，指向栈顶第一个空位
 	capacity int // 总容量
