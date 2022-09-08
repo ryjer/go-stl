@@ -7,33 +7,33 @@ import (
 )
 
 // 内容视图判等
-// func Test_DeepEqual(t *testing.T) {
-// 	type testCase[T num.Q] struct {
-// 		name     string
-// 		Receiver *Queue[T]
-// 		arg      *Queue[T]
-// 		want     bool
-// 	}
-// 	// int 类型测试
-// 	intList := New[int]()
-// 	// 在列表尾部插入元素，构造链表
-// 	intList.trailer.InsertAsPre(0)
-// 	intList.trailer.InsertAsPre(1)
-// 	intList.trailer.InsertAsPre(2)
-// 	intList.trailer.InsertAsPre(3)
-// 	intList.size = 4
-// 	intTests := []testCase[int]{
-// 		{"int 空判等", New[int](), NewFromSlice([]int{}), true},
-// 		{"int 非空判等", intList, NewFromSlice([]int{0, 1, 2, 3}), true},
-// 	}
-// 	for _, tt := range intTests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			if got := tt.Receiver.DeepEqual(tt.arg); got != tt.want {
-// 				t.Errorf("Receiver.DeepEqual(%v) = %v, Receiver => %v, want %v", tt.arg, got, tt.Receiver.String(), tt.want)
-// 			}
-// 		})
-// 	}
-// }
+func Test_DeepEqual(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *Queue[T]
+		arg      *Queue[T]
+		want     bool
+	}
+	// int 类型测试
+	intList := New[int]()
+	// 在列表尾部插入元素，构造链表
+	intList.trailer.InsertAsPre(0)
+	intList.trailer.InsertAsPre(1)
+	intList.trailer.InsertAsPre(2)
+	intList.trailer.InsertAsPre(3)
+	intList.size = 4
+	intTests := []testCase[int]{
+		{"int 空判等", New[int](), NewFromSlice([]int{}), true},
+		{"int 非空判等", intList, NewFromSlice([]int{0, 1, 2, 3}), true},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.DeepEqual(tt.arg); got != tt.want {
+				t.Errorf("Receiver = %v .DeepEqual(%v) = %v, want %v", tt.Receiver, tt.arg, got, tt.want)
+			}
+		})
+	}
+}
 
 // 空队列构造
 func Test_New(t *testing.T) {
