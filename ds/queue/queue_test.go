@@ -79,22 +79,22 @@ func Test_Enqueue(t *testing.T) {
 }
 
 // 从切片构造
-// func Test_NewFromSlice(t *testing.T) {
-// 	type testCase[T num.Q] struct {
-// 		name string
-// 		arg  []T
-// 		want string
-// 	}
-// 	// int 类型测试
-// 	intTests := []testCase[int]{
-// 		{"int 空链表", []int{}, "{0 []}"},
-// 		{"int 非空链表", []int{0, 1, 2, 3}, "{4 [0 1 2 3]}"},
-// 	}
-// 	for _, tt := range intTests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			if got := NewFromSlice(tt.arg); got.String() != tt.want {
-// 				t.Errorf("NewFromSlice(%v) = %v, want %v", tt.arg, got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
+func Test_NewFromSlice(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name string
+		arg  []T
+		want string
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空链表", []int{}, "{0 []}"},
+		{"int 非空链表", []int{0, 1, 2, 3}, "{4 [0 1 2 3]}"},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewFromSlice(tt.arg); got.String() != tt.want {
+				t.Errorf("NewFromSlice(%v) = %v, want %v", tt.arg, got, tt.want)
+			}
+		})
+	}
+}
