@@ -135,7 +135,7 @@ func Test_Push(t *testing.T) {
 	type testCase[T num.Q] struct {
 		name     string    // 测试用例名
 		Recv     *Stack[T] // 接收对象
-		arg      T         // 单参数，秩
+		arg      T         // 单参数
 		wantRecv *Stack[T] // 预期结果
 	}
 	// int 类型测试
@@ -170,7 +170,7 @@ func Test_shrink(t *testing.T) {
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
 			oldCap := tt.Recv.capacity
-			if tt.Recv.shrink(); !!tt.Recv.DeepEqual(tt.wantRecv) {
+			if tt.Recv.shrink(); !tt.Recv.DeepEqual(tt.wantRecv) {
 				t.Errorf("this.shrink(), oldCap=%v, newRecv=%v,  wantRecv %v", oldCap, tt.Recv, tt.wantRecv)
 			}
 		})
