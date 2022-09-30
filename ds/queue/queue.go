@@ -52,8 +52,7 @@ func (this *Queue[T]) ToSlice() (newSlice []T) {
 	return newSlice
 }
 
-// 容器方法
-// 容量
+// 已用容量
 func (this *Queue[T]) Size() int {
 	return this.size
 }

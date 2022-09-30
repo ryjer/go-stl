@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"reflect"
 	"testing"
 
 	num "gitee.com/ryjer/go-generic/number"
@@ -25,6 +26,8 @@ func Test_DeepEqual(t *testing.T) {
 	intTests := []testCase[int]{
 		{"int 空判等", New[int](), NewFromSlice([]int{}), true},
 		{"int 非空判等", intList, NewFromSlice([]int{0, 1, 2, 3}), true},
+		{"int 数量不等", intList, NewFromSlice([]int{0, 1, 2, 3, 4}), false},
+		{"int 数量相同，元素不同", intList, NewFromSlice([]int{0, 1, 2, 4}), false},
 	}
 	for _, tt := range intTests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -157,6 +160,89 @@ func Test_NewFromSlice(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewFromSlice(tt.arg); got.String() != tt.want {
 				t.Errorf("NewFromSlice(%v) = %v, want %v", tt.arg, got, tt.want)
+			}
+		})
+	}
+}
+
+// 转换为切片
+func Test_ToSlice(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string
+		Receiver *Queue[T] // 接收对象
+		want     []T       // 转换目标，切片
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空链表", NewFromSlice([]int{}), []int{}},
+		{"int 非空链表", NewFromSlice([]int{0, 1, 2, 3}), []int{0, 1, 2, 3}},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.ToSlice(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("this.ToSlice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// 获取已用容量
+func Test_Size(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string    // 测试用例名
+		Receiver *Queue[T] // 接收对象
+		want     int
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空队列", NewFromSlice([]int{}), 0},
+		{"int 非空队列", NewFromSlice([]int{1, 2, 3, 4}), 4},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.Size(); !(got == tt.want) {
+				t.Errorf("this.Size() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// 判空
+func Test_IsEmpty(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string    // 测试用例名
+		Receiver *Queue[T] // 接收对象
+		want     bool
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空队列", NewFromSlice([]int{}), true},
+		{"int 非空队列", NewFromSlice([]int{1, 2, 3, 4}), false},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.Receiver.IsEmpty(); !(got == tt.want) {
+				t.Errorf("this.IsEmpty() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// 清空队列
+func Test_Clear(t *testing.T) {
+	type testCase[T num.Q] struct {
+		name     string    // 测试用例名
+		Receiver *Queue[T] // 接收对象
+	}
+	// int 类型测试
+	intTests := []testCase[int]{
+		{"int 空队列", NewFromSlice([]int{})},
+		{"int 非空队列", NewFromSlice([]int{1, 2, 3, 4})},
+	}
+	for _, tt := range intTests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.Receiver.Clear(); !(tt.Receiver.size == 0) {
+				t.Errorf("this.Clear(), tt.Receiver = %v", tt.Receiver)
 			}
 		})
 	}
